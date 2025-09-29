@@ -146,6 +146,10 @@ export async function getActiveListings(options: {
     orderBy = `l.created_at_timestamp ${sortOrder.toUpperCase()}`
   }
 
+  // Add HEMI address parameter
+  params.push(process.env.NEXT_PUBLIC_HEMI_CONTRACT || '0x1Ee7476307e923319a12DDF127bcf8BdfAd345A0')
+  paramIndex++
+  
   // Add pagination parameters
   params.push(limit, offset)
 
@@ -178,7 +182,7 @@ export async function getActiveListings(options: {
     LEFT JOIN nft_tokens n ON l.token_id = n.token_id
     LEFT JOIN payment_tokens pt ON l.payment_token_address = pt.token_address
     LEFT JOIN token_prices tp ON l.payment_token_address = tp.token_address
-    LEFT JOIN token_prices hemi_tp ON hemi_tp.token_address = '0x1Ee7476307e923319a12DDF127bcf8BdfAd345A0'
+    LEFT JOIN token_prices hemi_tp ON hemi_tp.token_address = $${paramIndex - 1}
     WHERE ${whereConditions.join(' AND ')}
     ORDER BY ${orderBy}
     LIMIT $${paramIndex} OFFSET $${paramIndex + 1}

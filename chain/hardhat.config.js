@@ -30,6 +30,21 @@ module.exports = {
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 43111,
     }
+  },
+  etherscan: {
+    apiKey: {
+      hemiMainnet: process.env.ETHERSCAN_API_KEY || "dummy-key"
+    },
+    customChains: [
+      {
+        network: "hemiMainnet",
+        chainId: 43111,
+        urls: {
+          apiURL: "https://explorer.hemi.xyz/api",
+          browserURL: "https://explorer.hemi.xyz"
+        }
+      }
+    ]
   }
 }
 

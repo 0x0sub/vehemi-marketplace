@@ -1,0 +1,14 @@
+{
+    "network": "hemiMainnet",
+    "deployer": "0x9133A68b356204BaD0273480C28Cb8D3E0f4eAb6",
+    "proxy": "0x01Cc5c788556dAaBa25F772AEb92dCAbc59dF2a3",
+    "implementation": "0x66f8c45c6DDe1D8e2464CE3221cF45355f753fa5",
+    "admin": "0x5BEb8B11d6943806EEea21723C5fC3b2Db6789cb",
+    "initializerArgs": [
+      "0x371d3718D5b7F75EAb050FAe6Da7DF3092031c89",
+      "0x99e3dE3817F6081B2568208337ef83295b7f591D",
+      "0xad11a8BEb98bbf61dbb1aa0F6d6F2ECD87b35afA",
+      "0x9133A68b356204BaD0273480C28Cb8D3E0f4eAb6"
+    ],
+    "deployedAt": "2025-09-29T20:52:36.804Z"
+  }
