@@ -97,7 +97,7 @@ export default function MyVeHemiPage() {
             amount: isFinite(lockedFormatted) ? lockedFormatted : 0,
             unlockIn,
             unlockDate,
-            status: (p.isListed ? 'listed' : 'unlisted') as const,
+            status: p.isListed ? 'listed' : 'unlisted',
             listing: listingInfo
           };
         });
