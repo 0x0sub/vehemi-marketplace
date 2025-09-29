@@ -1,0 +1,51 @@
+import type { Metadata, Viewport } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import { Providers } from './providers'
+import { SiteHeader } from '../components/SiteHeader'
+import SiteFooter from '../components/SiteFooter'
+import { VeHemiListingProvider } from '../components/VeHemiListingProvider'
+import { Toaster } from '../components/ui/toaster'
+import { NetworkChecker } from '../components/NetworkChecker'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: 'veHEMI Marketplace - Trade locked HEMI veHEMI.com',
+  description: 'Trade locked HEMI on the P2P marketplace for veHemi NFTs - veHEMI.com',
+  icons: {
+    icon: '/favicon.ico',
+  },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en" className="dark">
+      <body className={inter.className}>
+        <Providers>
+          <VeHemiListingProvider>
+            <div className="min-h-screen relative bg-gradient-to-br from-slate-950 via-slate-900 to-black">
+              <NetworkChecker />
+              <SiteHeader />
+              {children}
+              <SiteFooter />
+            </div>
+            <Toaster />
+          </VeHemiListingProvider>
+        </Providers>
+      </body>
+    </html>
+  )
+}
+

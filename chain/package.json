@@ -1,0 +1,22 @@
+{
+  "name": "vehemi-chain",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Isolated Hardhat project for VeHemi contracts (avoids frontend dep conflicts)",
+  "scripts": {
+    "prepare": "echo 'chain workspace ready'",
+    "clean": "rimraf artifacts cache",
+    "compile": "hardhat compile",
+    "deploy:proxy": "hardhat run scripts/deploy-marketplace-proxy.js --network ${HARDHAT_NETWORK:-localhost}",
+    "test": "hardhat test"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/contracts-upgradeable": "^5.4.0",
+    "@openzeppelin/hardhat-upgrades": "^3.9.0",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.2",
+    "hardhat": "^2.22.10",
+    "rimraf": "^6.0.1"
+  }
+}

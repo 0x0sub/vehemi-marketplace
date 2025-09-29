@@ -1,0 +1,28 @@
+{
+  "network": "hemiSepolia",
+  "chainId": 743111,
+  "deployer": "0x536500D63f09C3E36F36856bfFb5C39856Ee43c3",
+  "contracts": {
+    "TestHEMI": {
+      "address": "0x1Ee7476307e923319a12DDF127bcf8BdfAd345A0",
+      "status": "deployed"
+    },
+    "VeHemi": {
+      "address": "0x6C26476010eF735b70C75460f75855b9Ed1142BF",
+      "status": "deployed",
+      "initialized": true,
+      "owner": "0x0000000000000000000000000000000000000000"
+    },
+    "VeHemiMarketplace": {
+      "address": "0xcD50d0bDD9AEba8d1218AD5cf909946CecdFe095",
+      "constructorArgs": [
+        "0x6C26476010eF735b70C75460f75855b9Ed1142BF",
+        "0x1Ee7476307e923319a12DDF127bcf8BdfAd345A0",
+        "0x536500D63f09C3E36F36856bfFb5C39856Ee43c3"
+      ],
+      "deployedAt": "2025-09-16T23:30:12.474Z",
+      "blockNumber": 0,
+      "transactionHash": "0x5ae439a8a9b63777414545bb9f86fb2f8c0701859bcec08c77ae9edd76216e06"
+    }
+  }
+}

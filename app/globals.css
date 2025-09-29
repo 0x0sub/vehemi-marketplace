@@ -1,0 +1,198 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Imported brand variables and base rules from app/styles.css (Tailwind v3 compatible) */
+@import url('https://fonts.googleapis.com/css2?family=Inter&family=Arial&family=Helvetica&family=Times+New+Roman&family=Georgia&family=Roboto&display=swap');
+
+/* Note: tailwindcss-animate is already enabled via tailwind.config.js plugin */
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+  overflow: auto;
+  overscroll-behavior-x: none;
+  /* Mobile touch improvements */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Brand tokens (moved from styles.css) */
+:root {
+  --radius: 0.625rem;
+  --hemi-orange: #ff6a00;
+  --hemi-slate: #1D2E34;
+  --hemi-cyan: #2599EE;
+  --hemi-mist: #ECF8F9;
+  --hemi-white: #FFFFFF;
+  --card: var(--hemi-white);
+  --card-foreground: var(--foreground);
+  --popover: var(--hemi-white);
+  --popover-foreground: var(--foreground);
+  --primary: var(--hemi-slate);
+  --primary-foreground: var(--hemi-white);
+  --secondary: color-mix(in oklab, var(--hemi-mist) 85%, var(--hemi-white));
+  --secondary-foreground: var(--hemi-slate);
+  --muted: color-mix(in oklab, var(--hemi-mist) 80%, var(--hemi-white));
+  --muted-foreground: oklch(0.48 0 0);
+  --accent: var(--hemi-orange);
+  --accent-foreground: var(--hemi-white);
+  --destructive: oklch(0.57 0.245 27.325);
+  --border: color-mix(in oklab, var(--hemi-slate) 10%, var(--hemi-white));
+  --input: var(--border);
+  --ring: color-mix(in oklab, var(--hemi-cyan) 55%, white);
+  --chart-1: var(--hemi-orange);
+  --chart-2: var(--hemi-cyan);
+  --chart-3: #6fb3ff;
+  --chart-4: #ffc266;
+  --chart-5: #6f8b93;
+  --sidebar: var(--hemi-white);
+  --sidebar-foreground: var(--hemi-slate);
+  --sidebar-primary: var(--hemi-slate);
+  --sidebar-primary-foreground: var(--hemi-white);
+  --sidebar-accent: var(--hemi-mist);
+  --sidebar-accent-foreground: var(--hemi-slate);
+  --sidebar-border: color-mix(in oklab, var(--hemi-slate) 12%, var(--hemi-white));
+  --sidebar-ring: var(--ring);
+}
+
+.dark {
+  /* Use HSL triplets to be compatible with tailwind config hsl(var(--token)) */
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 217.2 91.2% 59.8%;
+  --primary-foreground: 222.2 84% 4.9%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 224.3 76.3% 94.1%;
+}
+
+/* NOTE: removed default light-theme variable overrides that forced white background */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overscroll-behavior-x: none;
+  }
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Override for marketplace gradient background */
+.marketplace-gradient {
+  background: 
+  radial-gradient(1200px 800px at 120% -10%, rgba(37, 153, 238, 0.12), transparent 60%),
+  radial-gradient(900px 700px at -20% 10%, rgba(255, 106, 0, 0.08), transparent 60%),
+  radial-gradient(700px 500px at 50% 120%, rgba(255, 255, 255, 0.06), transparent 60%);
+  background-attachment: fixed !important;
+  min-height: 100vh !important;
+}
+
+/* Mobile button improvements */
+button, [role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Ensure proper touch targets on mobile */
+@media (max-width: 768px) {
+  button, [role="button"] {
+    min-height: 44px; /* iOS recommended minimum touch target */
+    min-width: 44px;
+  }
+}
+
+

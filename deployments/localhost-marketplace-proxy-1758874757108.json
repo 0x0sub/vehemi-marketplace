@@ -1,0 +1,14 @@
+{
+  "network": "localhost",
+  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "proxy": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+  "implementation": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "admin": "0x856e4424f806D16E8CBC702B3c0F2ede5468eae5",
+  "initializerArgs": [
+    "0x6C26476010eF735b70C75460f75855b9Ed1142BF",
+    "0x1Ee7476307e923319a12DDF127bcf8BdfAd345A0",
+    "0xD47971C7F5B1067d25cd45d30b2c9eb60de96443",
+    "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+  ],
+  "deployedAt": "2025-09-26T08:19:17.108Z"
+}

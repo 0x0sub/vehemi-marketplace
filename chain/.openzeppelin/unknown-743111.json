@@ -1,0 +1,265 @@
+{
+  "manifestVersion": "3.2",
+  "proxies": [
+    {
+      "address": "0xcD50d0bDD9AEba8d1218AD5cf909946CecdFe095",
+      "txHash": "0x23a77235fd5e9e5f8bf65d1ebb0343ca743a79e19b7acb6da0f341566abf9828",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "f8f2161aa8c7cf863cd685270b04461dd4b706e22c23208210d4167d3d15d7bd": {
+      "address": "0xF80e8F14eec064e582bb0ecaB2C69Ace668E47A2",
+      "txHash": "0xccb513b866dedffbbfa569e5d57cac4c387a4e3e6a51246baf452c184f2dcec3",
+      "layout": {
+        "solcVersion": "0.8.29",
+        "storage": [
+          {
+            "label": "veHemi",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(IVeHemi)10855",
+            "contract": "VeHemiMarketplaceUpgradeable",
+            "src": "contracts/VeHemiMarketplaceUpgradeable.sol:17"
+          },
+          {
+            "label": "hemi",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(IERC20)3256",
+            "contract": "VeHemiMarketplaceUpgradeable",
+            "src": "contracts/VeHemiMarketplaceUpgradeable.sol:18"
+          },
+          {
+            "label": "usdc",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(IERC20)3256",
+            "contract": "VeHemiMarketplaceUpgradeable",
+            "src": "contracts/VeHemiMarketplaceUpgradeable.sol:19"
+          },
+          {
+            "label": "platformFeeBps",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256",
+            "contract": "VeHemiMarketplaceUpgradeable",
+            "src": "contracts/VeHemiMarketplaceUpgradeable.sol:25"
+          },
+          {
+            "label": "feeRecipient",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address",
+            "contract": "VeHemiMarketplaceUpgradeable",
+            "src": "contracts/VeHemiMarketplaceUpgradeable.sol:26"
+          },
+          {
+            "label": "supportedPaymentTokens",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "VeHemiMarketplaceUpgradeable",
+            "src": "contracts/VeHemiMarketplaceUpgradeable.sol:29"
+          },
+          {
+            "label": "listings",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_mapping(t_uint256,t_struct(Listing)9749_storage)",
+            "contract": "VeHemiMarketplaceUpgradeable",
+            "src": "contracts/VeHemiMarketplaceUpgradeable.sol:43"
+          },
+          {
+            "label": "userListings",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_address,t_array(t_uint256)dyn_storage)",
+            "contract": "VeHemiMarketplaceUpgradeable",
+            "src": "contracts/VeHemiMarketplaceUpgradeable.sol:44"
+          },
+          {
+            "label": "activeListings",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_array(t_uint256)dyn_storage",
+            "contract": "VeHemiMarketplaceUpgradeable",
+            "src": "contracts/VeHemiMarketplaceUpgradeable.sol:45"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)146_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)74_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(ReentrancyGuardStorage)768_storage": {
+            "label": "struct ReentrancyGuardUpgradeable.ReentrancyGuardStorage",
+            "members": [
+              {
+                "label": "_status",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20)3256": {
+            "label": "contract IERC20",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IVeHemi)10855": {
+            "label": "contract IVeHemi",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_array(t_uint256)dyn_storage)": {
+            "label": "mapping(address => uint256[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Listing)9749_storage)": {
+            "label": "mapping(uint256 => struct VeHemiMarketplaceUpgradeable.Listing)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Listing)9749_storage": {
+            "label": "struct VeHemiMarketplaceUpgradeable.Listing",
+            "members": [
+              {
+                "label": "tokenId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "seller",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "price",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "paymentToken",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "deadline",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "isActive",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "createdAt",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "6"
+              }
+            ],
+            "numberOfBytes": "224"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.ReentrancyGuard": [
+            {
+              "contract": "ReentrancyGuardUpgradeable",
+              "label": "_status",
+              "type": "t_uint256",
+              "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:43",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
