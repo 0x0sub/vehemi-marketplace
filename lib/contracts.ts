@@ -5,7 +5,11 @@ export const CONTRACTS = {
   // Current network addresses (from env)
   VEHEMI: (process.env.NEXT_PUBLIC_VEHEMI_CONTRACT || '0x6C26476010eF735b70C75460f75855b9Ed1142BF') as Address,
   HEMI: (process.env.NEXT_PUBLIC_HEMI_CONTRACT || '0x1Ee7476307e923319a12DDF127bcf8BdfAd345A0') as Address,
-  USDC: (process.env.USDC_ADDRESS || '0xD47971C7F5B1067d25cd45d30b2c9eb60de96443') as Address,
+  USDC: (
+    process.env.NEXT_PUBLIC_USDC_CONTRACT ||
+    process.env.USDC_ADDRESS ||
+    '0xD47971C7F5B1067d25cd45d30b2c9eb60de96443'
+  ) as Address,
   MARKETPLACE: (process.env.NEXT_PUBLIC_MARKETPLACE_CONTRACT || '0xcD50d0bDD9AEba8d1218AD5cf909946CecdFe095') as Address,
 } as const
 
