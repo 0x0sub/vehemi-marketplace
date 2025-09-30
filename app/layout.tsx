@@ -14,8 +14,14 @@ export const metadata: Metadata = {
   title: 'veHEMI Marketplace - Trade locked HEMI veHEMI.com',
   description: 'Trade locked HEMI on the P2P marketplace for veHemi NFTs - veHEMI.com',
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+    shortcut: ['/favicon.ico'],
   },
+  manifest: '/site.webmanifest',
 }
 
 export const viewport: Viewport = {

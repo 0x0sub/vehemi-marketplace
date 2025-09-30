@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { X, Coins, Clock, Calendar, User, ExternalLink, DollarSign, Loader2, CheckCircle } from 'lucide-react';
 import { useWriteContract, useWaitForTransactionReceipt, useReadContract, useAccount } from 'wagmi';
 import { CONTRACTS, MARKETPLACE_ABI, ERC20_ABI } from '../lib/contracts';
@@ -43,6 +44,7 @@ export const TokenPurchaseModal = ({
   const [isBuying, setIsBuying] = useState(false);
   const [needsApproval, setNeedsApproval] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
+  const [hemiSpotUsd, setHemiSpotUsd] = useState<number | undefined>(undefined);
   
   const { address } = useAccount();
 
@@ -143,6 +145,9 @@ export const TokenPurchaseModal = ({
       
       const data = await response.json();
       setToken(data);
+      // Prime spot price from API payload to avoid extra fetches
+      const hemiSpot = (data as any)?.hemiPrice ?? (data as any)?.hemi_usd_price ?? undefined;
+      if (typeof hemiSpot === 'number') setHemiSpotUsd(hemiSpot);
     } catch (err) {
       console.error('Error fetching token details:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch token details');
@@ -227,11 +232,15 @@ export const TokenPurchaseModal = ({
         ? apiUsdValueRaw
         : apiUsdValueRaw !== undefined
           ? parseFloat(String(apiUsdValueRaw))
-          : (typeof hemiReferenceUsdPriceRaw === 'number' && typeof token.hemiAmount === 'number'
-              ? hemiReferenceUsdPriceRaw * token.hemiAmount
-              : (hemiReferenceUsdPriceRaw !== undefined && typeof token.hemiAmount === 'number'
-                  ? parseFloat(String(hemiReferenceUsdPriceRaw)) * token.hemiAmount
-                  : undefined)))
+          : (token.paymentToken?.symbol === 'USDC'
+              ? (typeof token.price === 'number' ? token.price : undefined)
+              : (typeof hemiSpotUsd === 'number' && typeof token.price === 'number'
+                  ? token.price * hemiSpotUsd
+                  : (typeof hemiReferenceUsdPriceRaw === 'number' && typeof token.price === 'number'
+                      ? token.price * hemiReferenceUsdPriceRaw
+                      : (hemiReferenceUsdPriceRaw !== undefined && typeof token.price === 'number'
+                          ? token.price * parseFloat(String(hemiReferenceUsdPriceRaw))
+                          : undefined)))))
     : undefined;
 
   const pricePerHemiInPaymentToken: number | undefined = token && token.hemiAmount > 0
@@ -249,10 +258,13 @@ export const TokenPurchaseModal = ({
     if (typeof hemiReferenceUsdPriceRaw === 'number') return hemiReferenceUsdPriceRaw;
     if (hemiReferenceUsdPriceRaw !== undefined) {
       const parsed = parseFloat(String(hemiReferenceUsdPriceRaw));
-      return isNaN(parsed) ? undefined : parsed;
+      if (!isNaN(parsed)) return parsed;
     }
+    if (typeof hemiSpotUsd === 'number') return hemiSpotUsd;
     return undefined;
   })();
+
+  // Removed client-side spot fetch; rely on API response to include hemiPrice
 
   const percentVsCurrentHemi: number | undefined = typeof hemiReferenceUsdPrice === 'number' && typeof pricePerHemiUSD === 'number' && hemiReferenceUsdPrice > 0
     ? ((pricePerHemiUSD - hemiReferenceUsdPrice) / hemiReferenceUsdPrice) * 100
@@ -397,15 +409,18 @@ export const TokenPurchaseModal = ({
             <div className="p-8">
               <header className="flex items-start justify-between mb-6">
                 <div className="flex flex-col gap-1">
-                  <h1 className="text-[28px] leading-[34px] font-semibold tracking-[-0.01em] text-white">
-                    Buy veHEMI #{tokenId}
-                  </h1>
+                  <div className="flex items-center gap-3">
+                    <Image src="/vehemi-locked-logo.png" alt="veHEMI" width={28} height={28} className="rounded" />
+                    <h1 className="text-[28px] leading-[34px] font-semibold tracking-[-0.01em] text-white">
+                      Buy veHEMI #{tokenId}
+                    </h1>
+                  </div>
                   {typeof hemiReferenceUsdPrice === 'number' && (
-                    <p className="text-sm text-slate-400">Based on HEMI spot ${hemiReferenceUsdPrice.toFixed(4)}</p>
+                    <p className="hidden md:block text-sm text-slate-400">Based on HEMI spot ${hemiReferenceUsdPrice.toFixed(4)}</p>
                   )}
                 </div>
                 {typeof percentVsCurrentHemi === 'number' && (
-                  <span className={`shrink-0 self-start rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-medium ${percentVsCurrentHemi < 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  <span className={`hidden md:inline-flex shrink-0 self-start rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-medium ${percentVsCurrentHemi < 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                     {`${percentVsCurrentHemi.toFixed(1)}% vs spot`}
                   </span>
                 )}

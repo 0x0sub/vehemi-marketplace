@@ -7,7 +7,7 @@ export default function SiteFooter({
   termsUrl = "#",
   privacyUrl = "#",
   xUrl = "https://x.com/sub_research",
-  githubUrl = "#",
+  githubUrl = "https://github.com/0x0sub/vehemi-marketplace",
   discordUrl = "#",
   telegramUrl = "https://t.me/vehemi",
   disclaimer = "This marketplace is experimental. Use at your own risk.",
@@ -61,6 +61,7 @@ export default function SiteFooter({
         <div>
           <div className="text-sm font-semibold text-[#E5EDF5]">Join the community</div>
           <div className="mt-3 flex flex-wrap items-center gap-3">
+            {/*
             <a
               href={discordUrl}
               target="_blank"
@@ -69,7 +70,7 @@ export default function SiteFooter({
               aria-label="Join our Discord"
             >
               <DiscordIcon className="h-5 w-5"/> Discord
-            </a>
+            </a> */}
             <a
               href={telegramUrl}
               target="_blank"
