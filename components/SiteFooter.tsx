@@ -1,7 +1,7 @@
 export default function SiteFooter({
   brand = "veHEMI.com Marketplace",
   byline = "Built for all Hemigos by @sub_research",
-  faqUrl = "#",
+  faqUrl = "/faq",
   activityUrl = "/activity",
   docsUrl = "#",
   termsUrl = "#",
@@ -10,7 +10,7 @@ export default function SiteFooter({
   githubUrl = "https://github.com/0x0sub/vehemi-marketplace",
   discordUrl = "#",
   telegramUrl = "https://t.me/vehemi",
-  disclaimer = "This marketplace is experimental. Use at your own risk.",
+  disclaimer = "This marketplace is not affiliated with Hemi Labs. Use at your own risk.",
   version = "v0.1.0",
 }: {
   brand?: string;
@@ -35,8 +35,7 @@ export default function SiteFooter({
         <div className="space-y-2">
           <div className="text-sm text-[#93A4B7]">{brand}</div>
           <div className="text-sm font-medium">{byline}</div>
-          <div className="text-xs text-[#93A4B7]">{disclaimer}</div>
-          <div className="text-xs text-[#93A4B7]">© {year} - {version}</div>
+          <div className="text-xs text-[#93A4B7]">{disclaimer} © {year} - {version}</div>
         </div>
 
         {/* Column 2: Navigation */}

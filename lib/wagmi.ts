@@ -1,6 +1,6 @@
 import { http, createConfig } from 'wagmi'
 import { mainnet, sepolia } from 'wagmi/chains'
-import { injected, walletConnect, coinbaseWallet } from 'wagmi/connectors'
+import { injected, walletConnect, coinbaseWallet, metaMask } from 'wagmi/connectors'
 import { hemi, hemiSepolia } from 'hemi-viem'
 
 // Export the chains for use in other parts of the application
@@ -13,6 +13,9 @@ export const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'de
 export const config = createConfig({
   chains: [hemi, hemiSepolia, mainnet, sepolia],
   connectors: [
+    // Always include MetaMask connector - it will handle detection internally
+    metaMask(),
+    // Include generic injected connector as fallback
     injected(),
     // Only add walletConnect if we have a valid project ID and we're in the browser
     ...(typeof window !== 'undefined' && projectId && projectId !== 'demo_project_id' ? [walletConnect({ 

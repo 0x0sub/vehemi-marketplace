@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 410.9803154 602.6615776">
+  <!-- Generator: Adobe Illustrator 29.7.1, SVG Export Plug-In . SVG Version: 2.1.1 Build 8)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: url(#linear-gradient2);
+      }
+
+      .st1 {
+        fill: url(#linear-gradient1);
+      }
+
+      .st2 {
+        fill: url(#linear-gradient4);
+      }
+
+      .st3 {
+        fill: url(#linear-gradient3);
+      }
+
+      .st4 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="304.9163662" y1="573.5820095" x2="304.9163662" y2="221.5861097" gradientUnits="userSpaceOnUse">
+      <stop offset=".0855015" stop-color="#10175e"/>
+      <stop offset=".1147776" stop-color="#101d64"/>
+      <stop offset=".4221288" stop-color="#125aa2"/>
+      <stop offset=".6825845" stop-color="#1486ce"/>
+      <stop offset=".8833068" stop-color="#15a1ea"/>
+      <stop offset="1" stop-color="#16acf5"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient1" x1="103.2563931" y1="562.3320095" x2="103.2563931" y2="237.2021267" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#eb531f"/>
+      <stop offset=".8157392" stop-color="#f59336"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient2" x1="166.7713467" y1="356.8320095" x2="166.7713467" y2="246.3219997" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ab6924"/>
+      <stop offset="1" stop-color="#d6832d"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient3" x1="242.3363491" y1="548.8295681" x2="242.3363491" y2="368.1794725" gradientUnits="userSpaceOnUse">
+      <stop offset=".0560476" stop-color="#0e165a"/>
+      <stop offset=".2806652" stop-color="#0d2266"/>
+      <stop offset=".6927894" stop-color="#0c4485"/>
+      <stop offset=".9341263" stop-color="#0c5b9b"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient4" x1="109.9356963" y1="321.7991898" x2="266.7335243" y2="49.9033596" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#10175e"/>
+      <stop offset=".0320132" stop-color="#101d64"/>
+      <stop offset=".3681004" stop-color="#125aa2"/>
+      <stop offset=".6529075" stop-color="#1486ce"/>
+      <stop offset=".8723965" stop-color="#15a1ea"/>
+      <stop offset="1" stop-color="#16acf5"/>
+    </linearGradient>
+  </defs>
+  <path d="M360.9114224,167.7358181v52.4013624l-63-31.8725538c0-25.0100098-10.1401367-47.6499023-26.5200195-64.0400391-16.3900146-16.3798828-39.0300293-26.5200195-64.0400391-26.5200195-50.0200195,0-90.5600586,40.5400391-90.5600586,90.5600586v78.75h-63v-75.9399414c0-84.8100586,68.75-153.5600586,153.5600586-153.5600586s153.5600586,45.4111328,153.5600586,130.2211914Z"/>
+  <g>
+    <path d="M400.5388638,267.0146267v230.4099121c0,3.2299805-1.8779549,6.170166-4.8320008,7.5700684l-183.6054992,88.8349609v-288.7548828l78.2255261-38.0600586h110.2119739Z"/>
+    <path d="M142.5388638,359.0893337v59.9902344l57,29.25v145.5L15.2358442,504.9946072c-2.9311292-1.3999023-4.7943925-4.3400879-4.7943925-7.5700684v-230.4099121h109.3568554l18.5939016-1.6850586,61.1466551,28.9401855v92.3747559l-57-27.5551758Z"/>
+  </g>
+  <path class="st4" d="M397.7313687,237.2021267v230.4099121c0,3.2299805-1.8499756,6.170166-4.7600098,7.5700684l-120.4000244,58.0100098-60.4699707,29.1398926v-287.0698242l77.0600586-38.0600586h108.5699463Z"/>
+  <path class="st1" d="M137.4713589,328.5219509v70.6801758l58.5999756,28.3198242v134.8100586L15.2013394,475.1821072c-2.9100342-1.3999023-4.7598877-4.3400879-4.7598877-7.5700684v-230.4099121h108.5698242l18.460083,9.119873,58.5999756,28.9401855v81.5698242l-58.5999756-28.3100586Z"/>
+  <polygon class="st0" points="196.0713345 275.2621853 196.0713345 356.8320095 137.4713589 328.5219509 137.4713589 246.3219997 196.0713345 275.2621853"/>
+  <polygon class="st3" points="272.5713345 389.3620388 272.5713345 533.1921169 212.1013638 562.3320095 212.1013638 363.6520779 272.5713345 389.3620388"/>
+  <path class="st2" d="M358.9114224,162.3920681v29.0600586l-63-31.8701172c0-25.0100098-10.1401367-47.6499023-26.5200195-64.0400391-16.3900146-16.3798828-39.0300293-26.5200195-64.0400391-26.5200195-50.0200195,0-90.5600586,40.5400391-90.5600586,90.5600586v77.6201172h-63v-74.8100586C51.7913052,77.5820095,120.5413052,8.8320095,205.3513638,8.8320095s153.5600586,68.75,153.5600586,153.5600586Z"/>
+</svg>

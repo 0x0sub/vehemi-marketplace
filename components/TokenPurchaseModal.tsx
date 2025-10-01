@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { X, Coins, Clock, Calendar, User, ExternalLink, DollarSign, Loader2, CheckCircle } from 'lucide-react';
 import { useWriteContract, useWaitForTransactionReceipt, useReadContract, useAccount } from 'wagmi';
 import { CONTRACTS, MARKETPLACE_ABI, ERC20_ABI } from '../lib/contracts';
+import { WalletSelectionModal } from './WalletSelectionModal';
 
 interface VeHemiToken {
   id: string;
@@ -45,8 +46,9 @@ export const TokenPurchaseModal = ({
   const [needsApproval, setNeedsApproval] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [hemiSpotUsd, setHemiSpotUsd] = useState<number | undefined>(undefined);
+  const [showWalletModal, setShowWalletModal] = useState(false);
   
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const isUserSeller = (): boolean => {
     const result = connectedUser && token?.sellerAddress ? 
@@ -110,18 +112,27 @@ export const TokenPurchaseModal = ({
     hash: buyHash,
   });
   
-  // Log buy errors
-  useEffect(() => {
-    if (buyError) {
-      console.error('Buy transaction error:', buyError);
-    }
-  }, [buyError]);
-  
   // Wagmi hooks for approval transaction
   const { writeContract: writeApproveContract, data: approveHash, isPending: isApprovePending, error: approveError } = useWriteContract();
   const { isLoading: isApproveConfirming, isSuccess: isApproveConfirmed } = useWaitForTransactionReceipt({
     hash: approveHash,
   });
+
+  // Log buy errors and reset state
+  useEffect(() => {
+    if (buyError) {
+      console.error('Buy transaction error:', buyError);
+      setIsBuying(false);
+    }
+  }, [buyError]);
+
+  // Log approval errors and reset state
+  useEffect(() => {
+    if (approveError) {
+      console.error('Approval transaction error:', approveError);
+      setIsApproving(false);
+    }
+  }, [approveError]);
 
   // Fetch token details when modal opens
   useEffect(() => {
@@ -355,6 +366,12 @@ export const TokenPurchaseModal = ({
   const handlePurchase = async () => {
     if (!token) return;
     
+    // If wallet is not connected, show wallet selection modal
+    if (!isConnected) {
+      setShowWalletModal(true);
+      return;
+    }
+    
     if (needsApproval) {
       await handleApprove();
       return;
@@ -390,204 +407,216 @@ export const TokenPurchaseModal = ({
 
   // @return
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={onClose}
-        >
+    <>
+      <AnimatePresence>
+        {isOpen && (
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            onClick={e => e.stopPropagation()}
-            className="bg-[color:var(--card)] rounded-3xl border border-slate-800/80 shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={onClose}
           >
-            <div className="p-8">
-              <header className="flex items-start justify-between mb-6">
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-3">
-                    <Image src="/vehemi-locked-logo.png" alt="veHEMI" width={28} height={28} className="rounded" />
-                    <h1 className="text-[28px] leading-[34px] font-semibold tracking-[-0.01em] text-white">
-                      Buy veHEMI #{tokenId}
-                    </h1>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-[color:var(--card)] rounded-3xl border border-slate-800/80 shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            >
+              <div className="p-8">
+                <header className="flex items-start justify-between mb-6">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-3">
+                      <Image src="/vehemi-locked-logo.png" alt="veHEMI" width={28} height={28} className="rounded" />
+                      <h1 className="text-[28px] leading-[34px] font-semibold tracking-[-0.01em] text-white">
+                        Buy veHEMI #{tokenId}
+                      </h1>
+                    </div>
+                    {typeof hemiReferenceUsdPrice === 'number' && (
+                      <p className="hidden md:block text-sm text-slate-400">Based on HEMI spot ${hemiReferenceUsdPrice.toFixed(4)}</p>
+                    )}
                   </div>
-                  {typeof hemiReferenceUsdPrice === 'number' && (
-                    <p className="hidden md:block text-sm text-slate-400">Based on HEMI spot ${hemiReferenceUsdPrice.toFixed(4)}</p>
+                  {typeof percentVsCurrentHemi === 'number' && (
+                    <span className={`hidden md:inline-flex shrink-0 self-start rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-medium ${percentVsCurrentHemi < 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {`${percentVsCurrentHemi.toFixed(1)}% vs spot`}
+                    </span>
                   )}
-                </div>
-                {typeof percentVsCurrentHemi === 'number' && (
-                  <span className={`hidden md:inline-flex shrink-0 self-start rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-medium ${percentVsCurrentHemi < 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {`${percentVsCurrentHemi.toFixed(1)}% vs spot`}
-                  </span>
-                )}
-                <button 
-                  onClick={onClose} 
-                  className="p-2 hover:bg-slate-800 rounded-xl transition-colors ml-3" 
-                  aria-label="Close dialog"
-                >
-                  <X className="w-6 h-6 text-slate-400" />
-                </button>
-              </header>
-
-              {loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[color:var(--hemi-orange)] mx-auto"></div>
-                    <p className="mt-2 text-slate-400">Loading token details...</p>
-                  </div>
-                </div>
-              ) : error ? (
-                <div className="text-center py-12">
-                  <p className="text-red-400 mb-4">Error: {error}</p>
-                  <button
-                    onClick={fetchTokenDetails}
-                    className="px-4 py-2 bg-[color:var(--hemi-orange)] text-white rounded-md hover:opacity-90 transition-opacity"
+                  <button 
+                    onClick={onClose} 
+                    className="p-2 hover:bg-slate-800 rounded-xl transition-colors ml-3" 
+                    aria-label="Close dialog"
                   >
-                    Retry
+                    <X className="w-6 h-6 text-slate-400" />
                   </button>
-                </div>
-              ) : token ? (
-                <div className="space-y-6">
-                  <section className="rounded-2xl p-0 border border-[#1E2937] bg-[#0F141B]">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-                      <div className="rounded-xl bg-[#0B1218] p-4 border border-[#1E2937]">
-                        <div className="text-xs uppercase tracking-wide text-[#93A4B7] mb-1">You get</div>
-                        <div className="flex items-end gap-2">
-                          <div className="text-2xl font-semibold" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatAmount(token.hemiAmount)} locked HEMI</div>
-                        </div>
-                        <div className="mt-2 text-sm text-[#93A4B7] flex items-center gap-2">
-                          <span className="inline-flex items-center gap-1">
-                            <Calendar className="w-4 h-4" /> Unlocks: <span className="text-white">{unlockDate ? formatDate(unlockDate) : '—'}</span>
-                          </span>
-                          <span className="opacity-70">({formatDuration(token.unlocksIn)})</span>
-                        </div>
-                      </div>
-                      <div className="rounded-xl bg-[#0B1218] p-4 border border-[#1E2937]">
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="text-xs uppercase tracking-wide text-[#93A4B7]">You pay</div>
-                          {formattedUserBalance && (
-                            <div className={`text-xs ${hasEnoughBalance ? 'text-[#93A4B7]' : 'text-red-400'}`}>Balance: {formattedUserBalance} {token.paymentToken.symbol}</div>
-                          )}
-                        </div>
-                        <div className="flex items-end gap-2">
-                          <div className="text-2xl font-semibold" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatTokenAmount(token.price, 0)} {token.paymentToken.symbol}</div>
-                          {typeof totalUsdValue === 'number' && (
-                            <div className="text-sm text-[#93A4B7]">(${formatUSDCNoGrouping(totalUsdValue, 2)})</div>
-                          )}
-                        </div>
-                        {!hasEnoughBalance && (
-                          <div className="mt-2 text-xs text-red-400">Insufficient balance to cover payment.</div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="px-6">
-                      <div className="rounded-xl border border-[#1E2937] bg-[#0B1218] p-4 flex items-center justify-between">
-                        <div className="text-[13px] text-[#93A4B7]">Unit price (per locked HEMI)</div>
-                        <div className="flex items-baseline gap-2">
-                          <div className="text-base font-medium" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                            {typeof pricePerHemiInPaymentToken === 'number' ? `${pricePerHemiInPaymentToken.toFixed(4)} ${token.paymentToken.symbol}` : '—'}
-                          </div>
-                          <div className="text-xs text-[#93A4B7]">{typeof pricePerHemiUSD === 'number' ? `$${pricePerHemiUSD.toFixed(4)}` : '—'}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="px-6 pt-3 text-[13px] text-[#93A4B7]">Locked HEMI remains non-transferable until the unlock date. No early withdrawal.</p>
-                    <div className="p-6">
-                      <details className="group">
-                        <summary className="list-none flex items-center gap-2 text-sm text-[#93A4B7] cursor-pointer select-none">
-                          <span className="transition-transform group-open:rotate-90">›</span>
-                          View full position details
-                        </summary>
-                        <div className="mt-3 rounded-xl border border-[#1E2937] bg-[#0B1218] p-4 text-sm">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="flex items-center justify-between rounded-lg bg-[#0F141B] p-3 border border-[#1E2937]">
-                              <span className="text-[#93A4B7]">Contract</span>
-                              <span className="font-mono">{shortenAddress((process.env.NEXT_PUBLIC_VEHEMI_ADDRESS as string) || (CONTRACTS as any).VEHEMI || (CONTRACTS as any).VEHEMI_ADDRESS)}</span>
-                            </div>
-                            <div className="flex items-center justify-between rounded-lg bg-[#0F141B] p-3 border border-[#1E2937]">
-                              <span className="text-[#93A4B7]">Seller</span>
-                              <span className="font-mono">{shortenAddress((token as any)?.seller?.address || (token as any)?.sellerAddress)}</span>
-                            </div>
-                            <div className="flex items-center justify-between rounded-lg bg-[#0F141B] p-3 border border-[#1E2937]">
-                              <span className="text-[#93A4B7]">Position ID</span>
-                              <span style={{ fontVariantNumeric: 'tabular-nums' }}>#{token.tokenId}</span>
-                            </div>
-                            <div className="flex items-center justify-between rounded-lg bg-[#0F141B] p-3 border border-[#1E2937]">
-                              <span className="text-[#93A4B7]">Network</span>
-                              <span>Hemi</span>
-                            </div>
-                          </div>
-                        </div>
-                      </details>
-                    </div>
-                  </section>
-                </div>
-              ) : null}
+                </header>
 
-              {token && (
-                <footer className="mt-8 pt-6 border-t border-slate-800/60">
-                  {isUserSeller() ? (
-                    <div className="w-full rounded-xl py-4 px-6 font-semibold flex items-center justify-center gap-2 border border-[color:var(--hemi-cyan)] text-[color:var(--hemi-cyan)] bg-transparent">
-                      <span>You own this veHEMI position</span>
+                {loading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[color:var(--hemi-orange)] mx-auto"></div>
+                      <p className="mt-2 text-slate-400">Loading token details...</p>
                     </div>
-                  ) : (
-                    <button 
-                      onClick={handlePurchase} 
-                      disabled={isBuying || isBuyPending || isBuyConfirming || isApproving || isApprovePending || isApproveConfirming || !hasEnoughBalance}
-                      className="w-full rounded-xl py-4 px-6 font-semibold transition-colors flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-orange-500 text-black shadow-[0_1px_0_0_rgba(255,255,255,0.25)_inset,0_8px_24px_-8px_rgba(255,153,0,0.55)] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                  </div>
+                ) : error ? (
+                  <div className="text-center py-12">
+                    <p className="text-red-400 mb-4">Error: {error}</p>
+                    <button
+                      onClick={fetchTokenDetails}
+                      className="px-4 py-2 bg-[color:var(--hemi-orange)] text-white rounded-md hover:opacity-90 transition-opacity"
                     >
-                      {isBuying || isBuyPending || isBuyConfirming ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          <span>
-                            {isBuyPending ? 'Confirming...' : isBuyConfirming ? 'Processing...' : 'Buying...'}
-                          </span>
-                        </>
-                      ) : isApproving || isApprovePending || isApproveConfirming ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          <span>
-                            {isApprovePending ? 'Confirming...' : isApproveConfirming ? 'Processing...' : 'Approving...'}
-                          </span>
-                        </>
-                      ) : !hasEnoughBalance ? (
-                        <>
-                          <X className="w-5 h-5" />
-                          <span>Insufficient balance</span>
-                        </>
-                      ) : needsApproval ? (
-                        <>
-                          <CheckCircle className="w-5 h-5" />
-                          <span>
-                            Approve {token.paymentToken.symbol} - {token.paymentToken.symbol === 'USDC' 
-                              ? `${formatPriceUSD(token.price)} USDC` 
-                              : `${token.price.toFixed(2)} ${token.paymentToken.symbol}`
-                            }
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <DollarSign className="w-5 h-5" />
-                          <span>
-                            Buy veHEMI #{tokenId} - {token.paymentToken.symbol === 'USDC' 
-                              ? `${formatPriceUSD(token.price)} USDC` 
-                              : `${token.price.toFixed(2)} ${token.paymentToken.symbol}`
-                            }
-                          </span>
-                        </>
-                      )}
+                      Retry
                     </button>
-                  )}
-                </footer>
-              )}
-            </div>
+                  </div>
+                ) : token ? (
+                  <div className="space-y-6">
+                    <section className="rounded-2xl p-0 border border-[#1E2937] bg-[#0F141B]">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+                        <div className="rounded-xl bg-[#0B1218] p-4 border border-[#1E2937]">
+                          <div className="text-xs uppercase tracking-wide text-[#93A4B7] mb-1">You get</div>
+                          <div className="flex items-end gap-2">
+                            <div className="text-2xl font-semibold" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatAmount(token.hemiAmount)} locked HEMI</div>
+                          </div>
+                          <div className="mt-2 text-sm text-[#93A4B7] flex items-center gap-2">
+                            <span className="inline-flex items-center gap-1">
+                              <Calendar className="w-4 h-4" /> Unlocks: <span className="text-white">{unlockDate ? formatDate(unlockDate) : '—'}</span>
+                            </span>
+                            <span className="opacity-70">({formatDuration(token.unlocksIn)})</span>
+                          </div>
+                        </div>
+                        <div className="rounded-xl bg-[#0B1218] p-4 border border-[#1E2937]">
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="text-xs uppercase tracking-wide text-[#93A4B7]">You pay</div>
+                            {formattedUserBalance && (
+                              <div className={`text-xs ${hasEnoughBalance ? 'text-[#93A4B7]' : 'text-red-400'}`}>Balance: {formattedUserBalance} {token.paymentToken.symbol}</div>
+                            )}
+                          </div>
+                          <div className="flex items-end gap-2">
+                            <div className="text-2xl font-semibold" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatTokenAmount(token.price, 0)} {token.paymentToken.symbol}</div>
+                            {typeof totalUsdValue === 'number' && (
+                              <div className="text-sm text-[#93A4B7]">(${formatUSDCNoGrouping(totalUsdValue, 2)})</div>
+                            )}
+                          </div>
+                          {!hasEnoughBalance && (
+                            <div className="mt-2 text-xs text-red-400">Insufficient balance to cover payment.</div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="px-6">
+                        <div className="rounded-xl border border-[#1E2937] bg-[#0B1218] p-4 flex items-center justify-between">
+                          <div className="text-[13px] text-[#93A4B7]">Unit price (per locked HEMI)</div>
+                          <div className="flex items-baseline gap-2">
+                            <div className="text-base font-medium" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                              {typeof pricePerHemiInPaymentToken === 'number' ? `${pricePerHemiInPaymentToken.toFixed(4)} ${token.paymentToken.symbol}` : '—'}
+                            </div>
+                            <div className="text-xs text-[#93A4B7]">{typeof pricePerHemiUSD === 'number' ? `$${pricePerHemiUSD.toFixed(4)}` : '—'}</div>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="px-6 pt-3 text-[13px] text-[#93A4B7]">Locked HEMI remains non-transferable until the unlock date. No early withdrawal.</p>
+                      <div className="p-6">
+                        <details className="group">
+                          <summary className="list-none flex items-center gap-2 text-sm text-[#93A4B7] cursor-pointer select-none">
+                            <span className="transition-transform group-open:rotate-90">›</span>
+                            View full position details
+                          </summary>
+                          <div className="mt-3 rounded-xl border border-[#1E2937] bg-[#0B1218] p-4 text-sm">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="flex items-center justify-between rounded-lg bg-[#0F141B] p-3 border border-[#1E2937]">
+                                <span className="text-[#93A4B7]">Contract</span>
+                                <span className="font-mono">{shortenAddress((process.env.NEXT_PUBLIC_VEHEMI_ADDRESS as string) || (CONTRACTS as any).VEHEMI || (CONTRACTS as any).VEHEMI_ADDRESS)}</span>
+                              </div>
+                              <div className="flex items-center justify-between rounded-lg bg-[#0F141B] p-3 border border-[#1E2937]">
+                                <span className="text-[#93A4B7]">Seller</span>
+                                <span className="font-mono">{shortenAddress((token as any)?.seller?.address || (token as any)?.sellerAddress)}</span>
+                              </div>
+                              <div className="flex items-center justify-between rounded-lg bg-[#0F141B] p-3 border border-[#1E2937]">
+                                <span className="text-[#93A4B7]">Position ID</span>
+                                <span style={{ fontVariantNumeric: 'tabular-nums' }}>#{token.tokenId}</span>
+                              </div>
+                              <div className="flex items-center justify-between rounded-lg bg-[#0F141B] p-3 border border-[#1E2937]">
+                                <span className="text-[#93A4B7]">Network</span>
+                                <span>Hemi</span>
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+                      </div>
+                    </section>
+                  </div>
+                ) : null}
+
+                {token && (
+                  <footer className="mt-8 pt-6 border-t border-slate-800/60">
+                    {isUserSeller() ? (
+                      <div className="w-full rounded-xl py-4 px-6 font-semibold flex items-center justify-center gap-2 border border-[color:var(--hemi-cyan)] text-[color:var(--hemi-cyan)] bg-transparent">
+                        <span>You own this veHEMI position</span>
+                      </div>
+                    ) : (
+                      <button 
+                        onClick={handlePurchase} 
+                        disabled={isBuying || isBuyPending || isBuyConfirming || isApproving || isApprovePending || isApproveConfirming || (isConnected && !hasEnoughBalance)}
+                        className="w-full rounded-xl py-4 px-6 font-semibold transition-colors flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-orange-500 text-black shadow-[0_1px_0_0_rgba(255,255,255,0.25)_inset,0_8px_24px_-8px_rgba(255,153,0,0.55)] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {!isConnected ? (
+                          <>
+                            <User className="w-5 h-5" />
+                            <span>Connect Wallet</span>
+                          </>
+                        ) : isBuying || isBuyPending || isBuyConfirming ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <span>
+                              {isBuyPending ? 'Confirming...' : isBuyConfirming ? 'Processing...' : 'Buying...'}
+                            </span>
+                          </>
+                        ) : isApproving || isApprovePending || isApproveConfirming ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <span>
+                              {isApprovePending ? 'Confirming...' : isApproveConfirming ? 'Processing...' : 'Approving...'}
+                            </span>
+                          </>
+                        ) : !hasEnoughBalance ? (
+                          <>
+                            <X className="w-5 h-5" />
+                            <span>Insufficient balance</span>
+                          </>
+                        ) : needsApproval ? (
+                          <>
+                            <CheckCircle className="w-5 h-5" />
+                            <span>
+                              Approve {token.paymentToken.symbol} - {token.paymentToken.symbol === 'USDC' 
+                                ? `${formatPriceUSD(token.price)} USDC` 
+                                : `${token.price.toFixed(2)} ${token.paymentToken.symbol}`
+                              }
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <DollarSign className="w-5 h-5" />
+                            <span>
+                              Buy veHEMI #{tokenId} - {token.paymentToken.symbol === 'USDC' 
+                                ? `${formatPriceUSD(token.price)} USDC` 
+                                : `${token.price.toFixed(2)} ${token.paymentToken.symbol}`
+                              }
+                            </span>
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </footer>
+                )}
+              </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+      
+      <WalletSelectionModal 
+        isOpen={showWalletModal}
+        onClose={() => setShowWalletModal(false)} 
+      />
+    </>
   );
 };

@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TokenPurchaseModal } from './TokenPurchaseModal';
 import { Tooltip } from './Tooltip';
 import { MarketplaceHeader } from './MarketplaceHeader';
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { CONTRACTS, MARKETPLACE_ABI } from '../lib/contracts';
 interface ListingToken {
   id: string;
   price: number;
@@ -92,6 +94,19 @@ export const TokenListings = ({
 }: TokenListingsProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTokenId, setSelectedTokenId] = useState<string | null>(null);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+
+  // Cancel listing on-chain
+  const { writeContract: writeCancel, data: cancelHash, isPending: isCancelPending } = useWriteContract();
+  const { isLoading: isCancelConfirming, isSuccess: isCancelConfirmed } = useWaitForTransactionReceipt({ hash: cancelHash });
+
+  useEffect(() => {
+    if (isCancelConfirmed) {
+      setCancellingId(null);
+      // Optionally refresh the page or refetch data
+      window.location.reload();
+    }
+  }, [isCancelConfirmed]);
 
   const handleHeaderSort = (field: SortOption['field']) => {
     const nextDirection: SortOption['direction'] = sortOption.field === field && sortOption.direction === 'asc' ? 'desc' : 'asc';
@@ -109,6 +124,21 @@ export const TokenListings = ({
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedTokenId(null);
+  };
+
+  const handleCancelListing = async (tokenId: string) => {
+    try {
+      setCancellingId(tokenId);
+      await writeCancel({
+        address: CONTRACTS.MARKETPLACE,
+        abi: MARKETPLACE_ABI,
+        functionName: 'cancelListing',
+        args: [BigInt(tokenId)]
+      });
+    } catch (e) {
+      console.error('Cancel listing failed', e);
+      setCancellingId(null);
+    }
   };
 
   const isUserSeller = (token: ListingToken): boolean => {
@@ -295,9 +325,15 @@ export const TokenListings = ({
                       </td>
                       <td className="px-6 py-4">
                         {isUserSeller(t) ? (
-                          <div className="inline-flex items-center gap-2 rounded-lg border border-[color:var(--hemi-cyan)] px-4 py-2 text-sm font-medium text-[color:var(--hemi-cyan)]">
-                            <span>Owned</span>
-                          </div>
+                          <Tooltip content={`Cancel your listing veHEMI #${t.tokenId}`}>
+                            <button 
+                              disabled={isCancelPending || isCancelConfirming}
+                              onClick={() => handleCancelListing(t.tokenId)}
+                              className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-red-500 hover:text-red-400 hover:underline disabled:opacity-60 disabled:cursor-not-allowed"
+                            >
+                              {isCancelPending || isCancelConfirming ? 'Cancelling...' : 'Cancel'}
+                            </button>
+                          </Tooltip>
                         ) : (
                           <button 
                             onClick={() => handleBuyClick(t.id)}

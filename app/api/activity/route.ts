@@ -49,7 +49,6 @@ export async function GET(request: NextRequest) {
         JOIN nft_tokens n ON l.token_id = n.token_id
         LEFT JOIN payment_tokens pt ON l.payment_token_address = pt.token_address
         LEFT JOIN token_prices tp ON l.payment_token_address = tp.token_address
-        WHERE l.status = 'active'
         
         UNION ALL
         
@@ -62,7 +61,7 @@ export async function GET(request: NextRequest) {
           l.price_formatted as total,
           pt.token_symbol as token,
           l.sold_at_timestamp as timestamp,
-          l.transaction_hash as tx_hash,
+          COALESCE(l.sale_transaction_hash, l.transaction_hash) as tx_hash,
           n.locked_amount_formatted as amount,
           n.lock_end_timestamp as unlock_date,
           CASE 
@@ -158,7 +157,6 @@ export async function GET(request: NextRequest) {
         SELECT 'list' as event_type, l.token_id, pt.token_symbol as token
         FROM listings l
         LEFT JOIN payment_tokens pt ON l.payment_token_address = pt.token_address
-        WHERE l.status = 'active'
         UNION ALL
         SELECT 'sale' as event_type, l.token_id, pt.token_symbol as token
         FROM listings l

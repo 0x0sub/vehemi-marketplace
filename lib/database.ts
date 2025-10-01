@@ -13,6 +13,7 @@ export interface ListingRow {
   created_at_timestamp: string
   status: string
   transaction_hash: string
+  sale_transaction_hash?: string
   block_number: number
   vehemi_balance_wei: string
   vehemi_balance_formatted: string

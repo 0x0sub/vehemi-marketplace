@@ -280,24 +280,43 @@ function ActivityFeed({ rightRail = false }: { rightRail?: boolean }) {
 // ---- Row ----
 function FeedItem({ evt }: { evt: FeedEvent }) {
   const color = evt.type==='sale' ? '#22C55E' : evt.type==='list' ? '#F59E0B' : '#F87171';
-  const title = evt.type==='sale'
-    ? `Sold ${fmt(evt.amount)} HEMI veHEMI #${evt.positionId}`
-    : evt.type==='list'
-      ? `Listed ${fmt(evt.amount)} HEMI veHEMI #${evt.positionId}`
-      : `Canceled ${fmt(evt.amount)} HEMI veHEMI #${evt.positionId}`;
+  
+  // Format the title based on event type
+  const formatTitle = () => {
+    const tokenAmount = fmt(evt.total);
+    const tokenTicker = evt.token;
+    const unitPrice = evt.unitUsd.toFixed(4);
+    const lockedAmount = fmt(evt.amount);
+    
+    // Calculate USD value correctly
+    let usdValue: string;
+    if (evt.token === 'USDC') {
+      // For USDC, the USD value is just the USDC amount (since USDC ≈ $1)
+      usdValue = evt.total.toFixed(2);
+    } else {
+      // For HEMI, calculate: total HEMI amount × USD price per HEMI
+      usdValue = (evt.total * evt.unitUsd).toFixed(2);
+    }
+    
+    if (evt.type === 'sale') {
+      return `veHEMI #${evt.positionId} sold @ $${unitPrice} / HEMI | ${tokenAmount} ${tokenTicker} ($${usdValue}) [${lockedAmount} HEMI locked]`;
+    } else if (evt.type === 'list') {
+      return `veHEMI #${evt.positionId} listed @ $${unitPrice} / HEMI | ${tokenAmount} ${tokenTicker} ($${usdValue}) [${lockedAmount} HEMI locked]`;
+    } else {
+      return `veHEMI #${evt.positionId} canceled [${lockedAmount} HEMI locked]`;
+    }
+  };
 
   return (
     <li className="rounded-xl border border-[#1E2937] px-3 py-2.5">
       <div className="flex items-start gap-3">
-        <div className="mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-md" style={{ backgroundColor: color + '22', color }}>
-          {evt.type==='sale' && <SaleIcon className="h-4 w-4" />}
-          {evt.type==='list' && <ListIcon className="h-4 w-4" />}
-          {evt.type==='cancel' && <CancelIcon className="h-4 w-4" />}
+        <div className="mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-md transition-transform duration-150 hover:scale-[1.05]" style={{ backgroundColor: color + '22', color }}>
+          <EventIcon type={evt.type} className="h-4 w-4" />
         </div>
         <div className="min-w-0 flex-1">
           {/* Line 1 */}
           <div className="flex items-center gap-2">
-            <div className="truncate text-sm font-medium">{title}</div>
+            <div className="truncate text-sm font-medium">{formatTitle()}</div>
             <span className="text-xs text-[#93A4B7]">{timeAgo(evt.timestamp)}</span>
           </div>
           {/* Line 2 meta */}
@@ -319,7 +338,7 @@ function FeedItem({ evt }: { evt: FeedEvent }) {
             <Chip>Unlocks in {calculateDaysUntilUnlock(evt.unlockDate)} days</Chip>
             <Addr label="Seller" addr={evt.seller} />
             {evt.buyer && <Addr label="Buyer" addr={evt.buyer} />}
-            <Tx tx={evt.txHash} />
+            <Tx tx={evt.txHash} eventType={evt.type} />
             <a 
               className="ml-auto inline-flex items-center gap-1 text-xs hover:underline" 
               href={`${process.env.NEXT_PUBLIC_EXPLORER_LINK || 'https://testnet.explorer.hemi.xyz/'}tx/${evt.txHash}`} 
@@ -391,7 +410,7 @@ function Addr({ label, addr }:{ label:string; addr:string }){
   );
 }
 
-function Tx({ tx }:{ tx:string }){
+function Tx({ tx, eventType }: { tx: string; eventType?: EventType }){
   const { toast } = useToast();
   
   const handleCopy = async () => {
@@ -413,9 +432,12 @@ function Tx({ tx }:{ tx:string }){
 
   const explorerUrl = process.env.NEXT_PUBLIC_EXPLORER_LINK || 'https://testnet.explorer.hemi.xyz/';
 
+  // For sales, show that this is the sale transaction
+  const label = eventType === 'sale' ? 'Sale Tx' : 'Tx';
+
   return (
     <span className="inline-flex items-center gap-1 rounded-md border border-[#1E2937] bg-[#0F141B] px-2 py-0.5">
-      <span className="text-[#93A4B7]">Tx</span>
+      <span className="text-[#93A4B7]">{label}</span>
       <span className="font-mono tabular-nums">{shorten(tx)}</span>
       <button 
         onClick={handleCopy}
@@ -432,41 +454,47 @@ function shorten(s:string){ return s.length>10 ? s.slice(0,6)+"…"+s.slice(-4) 
 function fmt(n:number){ return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(n); }
 
 // ---- Icons ----
-function SaleIcon(props: React.SVGProps<SVGSVGElement>){
+function EventIcon({ type, className }: { type: 'sale'|'list'|'cancel'; className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className={props.className}>
-      <path d="M4 12h16M12 4v16" strokeWidth="1.5"/>
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor">
+      {/* duotone squircle */}
+      <rect x="3" y="3" width="18" height="18" rx="5" fill="currentColor" opacity=".08" />
+      {type === 'sale' && (
+        <g strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M7 17l10-10" />
+          <path d="M11 7h6v6" />
+        </g>
+      )}
+      {type === 'list' && (
+        <g strokeWidth="1.6" strokeLinejoin="round">
+          <path d="M5 9V7.8A2.8 2.8 0 0 1 7.8 5H14l5 5-7 7-7-7V9Z" />
+          <circle cx="9.2" cy="8.8" r="1.2" />
+        </g>
+      )}
+      {type === 'cancel' && (
+        <g strokeWidth="1.6" strokeLinecap="round">
+          <circle cx="12" cy="12" r="8" opacity=".45" strokeWidth="1.2" />
+          <path d="M8 8l8 8M16 8l-8 8" />
+        </g>
+      )}
     </svg>
   );
 }
-function ListIcon(props: React.SVGProps<SVGSVGElement>){
+function ExternalIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className={props.className}>
-      <path d="M4 6h16M4 12h16M4 18h16" strokeWidth="1.5"/>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
+      <rect x="4.5" y="4.5" width="15" height="15" rx="3" strokeWidth="1.4" />
+      <path d="M13 5h6v6" strokeWidth="1.6" />
+      <path d="M19 5l-9 9" strokeWidth="1.6" />
     </svg>
   );
 }
-function CancelIcon(props: React.SVGProps<SVGSVGElement>){
+
+function CopyIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className={props.className}>
-      <path d="M6 6l12 12M18 6L6 18" strokeWidth="1.5"/>
-    </svg>
-  );
-}
-function ExternalIcon(props: React.SVGProps<SVGSVGElement>){
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className={props.className}>
-      <path d="M14 3h7v7" strokeWidth="1.5"/>
-      <path d="M21 3l-9 9" strokeWidth="1.5"/>
-      <path d="M5 12v7h7" strokeWidth="1.5"/>
-    </svg>
-  );
-}
-function CopyIcon(props: React.SVGProps<SVGSVGElement>){
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className={props.className}>
-      <rect x="9" y="9" width="10" height="10" rx="2" strokeWidth="1.5" />
-      <rect x="5" y="5" width="10" height="10" rx="2" strokeWidth="1.5" />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
+      <rect x="9" y="9" width="10" height="10" rx="2" strokeWidth="1.6" />
+      <rect x="5" y="5" width="10" height="10" rx="2" strokeWidth="1.2" opacity=".6" />
     </svg>
   );
 }

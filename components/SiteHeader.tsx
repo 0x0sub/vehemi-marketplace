@@ -23,10 +23,14 @@ export function SiteHeader() {
           </button>
 
           <div className="flex items-start gap-3 sm:gap-4 min-w-0 flex-1">
-            <div className="pt-1 flex-shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 230" className="h-9 w-9 sm:h-12 sm:w-12" aria-label="Hemi logo" role="img">
-                <path fill="currentColor" className="[color:var(--hemi-orange)]" d="M134.3,1.9l-14,82.3h-10.7L95.7,1.9c-.2-1.1-1.2-1.8-2.3-1.6C39.3,10.5.2,57.9.2,115s39.1,104.5,93.2,114.7c1.1.2,2.1-.5,2.3-1.6l14-82.3h10.7l14,82.3c.2,1.1,1.2,1.8,2.3,1.6,54.1-10.1,93.2-57.6,93.2-114.7S190.7,10.5,136.6.3c-1.1-.2-2.1.5-2.3,1.6Z" />
-              </svg>
+            <div className="flex-shrink-0 self-start sm:self-center">
+            <img 
+                src="/vehemi-logo.svg" 
+                alt="Vehemi logo" 
+                className="h-9 w-9 sm:h-16 sm:w-16"
+                aria-label="Vehemi logo"
+                role="img"
+              />
             </div>
             <div className="min-w-0">
               <h1 className="text-2xl sm:text-4xl font-semibold tracking-tight">

@@ -35,7 +35,8 @@
     "indexer-status": "node scripts/indexer-status.js",
     "indexer-diagnostic": "node scripts/indexer-diagnostic.js",
     "fix-events-table": "node scripts/fix-events-table.js",
-    "fix-database-schema": "node scripts/fix-database-schema.js"
+    "fix-database-schema": "node scripts/fix-database-schema.js",
+    "backfill-sale-transactions": "node scripts/backfill-sale-transactions.js"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.4.0",
