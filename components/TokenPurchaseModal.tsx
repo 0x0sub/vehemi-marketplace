@@ -5,6 +5,7 @@ import { X, Coins, Clock, Calendar, User, ExternalLink, DollarSign, Loader2, Che
 import { useWriteContract, useWaitForTransactionReceipt, useReadContract, useAccount } from 'wagmi';
 import { CONTRACTS, MARKETPLACE_ABI, ERC20_ABI } from '../lib/contracts';
 import { WalletSelectionModal } from './WalletSelectionModal';
+import { Tooltip } from './Tooltip';
 
 interface VeHemiToken {
   id: string;
@@ -492,7 +493,22 @@ export const TokenPurchaseModal = ({
                             )}
                           </div>
                           <div className="flex items-end gap-2">
-                            <div className="text-2xl font-semibold" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatTokenAmount(token.price, 0)} {token.paymentToken.symbol}</div>
+                            <Tooltip 
+                              content={
+                                <div className="text-xs text-slate-300">
+                                  {token.price.toFixed(8)} {token.paymentToken.symbol}
+                                </div>
+                              }
+                              position="bottom"
+                              className="!mt-1"
+                            >
+                              <div className="text-2xl font-semibold" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                                {token.price < 1 
+                                  ? formatTokenAmount(token.price, 4) 
+                                  : formatTokenAmount(token.price, 0)
+                                } {token.paymentToken.symbol}
+                              </div>
+                            </Tooltip>
                             {typeof totalUsdValue === 'number' && (
                               <div className="text-sm text-[#93A4B7]">(${formatUSDCNoGrouping(totalUsdValue, 2)})</div>
                             )}
@@ -507,7 +523,12 @@ export const TokenPurchaseModal = ({
                           <div className="text-[13px] text-[#93A4B7]">Unit price (per locked HEMI)</div>
                           <div className="flex items-baseline gap-2">
                             <div className="text-base font-medium" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                              {typeof pricePerHemiInPaymentToken === 'number' ? `${pricePerHemiInPaymentToken.toFixed(4)} ${token.paymentToken.symbol}` : '—'}
+                              {typeof pricePerHemiInPaymentToken === 'number' 
+                                ? `${pricePerHemiInPaymentToken < 1 
+                                    ? pricePerHemiInPaymentToken.toFixed(4) 
+                                    : pricePerHemiInPaymentToken.toFixed(0)
+                                  } ${token.paymentToken.symbol}` 
+                                : '—'}
                             </div>
                             <div className="text-xs text-[#93A4B7]">{typeof pricePerHemiUSD === 'number' ? `$${pricePerHemiUSD.toFixed(4)}` : '—'}</div>
                           </div>
@@ -588,7 +609,7 @@ export const TokenPurchaseModal = ({
                             <span>
                               Approve {token.paymentToken.symbol} - {token.paymentToken.symbol === 'USDC' 
                                 ? `${formatPriceUSD(token.price)} USDC` 
-                                : `${token.price.toFixed(2)} ${token.paymentToken.symbol}`
+                                : `${token.price < 1 ? token.price.toFixed(4) : token.price.toFixed(0)} ${token.paymentToken.symbol}`
                               }
                             </span>
                           </>
@@ -598,7 +619,7 @@ export const TokenPurchaseModal = ({
                             <span>
                               Buy veHEMI #{tokenId} - {token.paymentToken.symbol === 'USDC' 
                                 ? `${formatPriceUSD(token.price)} USDC` 
-                                : `${token.price.toFixed(2)} ${token.paymentToken.symbol}`
+                                : `${token.price < 1 ? token.price.toFixed(4) : token.price.toFixed(0)} ${token.paymentToken.symbol}`
                               }
                             </span>
                           </>

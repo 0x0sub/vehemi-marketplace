@@ -294,8 +294,8 @@ function TableView({ rows, sortBy, setSortBy, onList, onCancel, isCancellingId, 
 
   return (
     <div className="overflow-hidden rounded-2xl border border-[#1E2937]">
-      <table className="w-full border-collapse bg-[#0F141B]">
-        <thead className="bg-[#0B1218]">
+      <table className="w-full border-collapse ">
+        <thead className="">
           <tr>
             <TH label="Position" sortKey="id" />
             <TH label="HEMI Amount" sortKey="amount" />

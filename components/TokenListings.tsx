@@ -10,19 +10,10 @@ import { CONTRACTS, MARKETPLACE_ABI } from '../lib/contracts';
 // Utility function to format lockup duration in a user-friendly way
 const formatLockupDuration = (seconds: number): string => {
   const days = Math.floor(seconds / (24 * 60 * 60));
-  const weeks = Math.floor(days / 7);
-  const months = Math.floor(days / 30);
-  const years = Math.floor(days / 365);
   
-  if (years >= 1) {
-    return years === 1 ? '1 year' : `${years} years`;
-  } else if (months >= 1) {
-    return months === 1 ? '1 month' : `${months} months`;
-  } else if (weeks >= 1) {
-    return weeks === 1 ? '1 week' : `${weeks} weeks`;
-  } else {
-    return days === 1 ? '1 day' : `${days} days`;
-  }
+  if (days < 30) return `${days} days`;
+  if (days < 365) return `${Math.round(days / 30)} months`;
+  return `${Math.round(days / 365)} years`;
 };
 
 // Utility function to format unlock date with time
