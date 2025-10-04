@@ -19,6 +19,7 @@ export interface ListingRow {
   vehemi_balance_formatted: string
   locked_amount_wei: string
   locked_amount_formatted: string
+  lock_start_timestamp: string
   lock_end_timestamp: string
   owner_address: string
   payment_token_symbol?: string
@@ -171,6 +172,7 @@ export async function getActiveListings(options: {
       n.vehemi_balance_formatted,
       n.locked_amount_wei,
       n.locked_amount_formatted,
+      n.lock_start_timestamp,
       n.lock_end_timestamp,
       n.owner_address,
       pt.token_symbol as payment_token_symbol,
@@ -285,6 +287,7 @@ export async function getListingByTokenId(tokenId: string) {
       n.vehemi_balance_formatted,
       n.locked_amount_wei,
       n.locked_amount_formatted,
+      n.lock_start_timestamp,
       n.lock_end_timestamp,
       n.owner_address,
       pt.token_symbol as payment_token_symbol,

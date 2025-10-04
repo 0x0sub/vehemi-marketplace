@@ -65,6 +65,7 @@ function ActivityFeed({ rightRail = false }: { rightRail?: boolean }) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [currentOffset, setCurrentOffset] = useState(0);
+  const [hemiUsd, setHemiUsd] = useState<number | null>(null);
 
   // Fetch activity data from API
   useEffect(() => {
@@ -104,6 +105,26 @@ function ActivityFeed({ rightRail = false }: { rightRail?: boolean }) {
 
     fetchActivity();
   }, [tab, tokens]);
+
+  // Fetch current HEMI USD price once
+  useEffect(() => {
+    let cancelled = false;
+    const fetchHemi = async () => {
+      try {
+        const res = await fetch('/api/hemi-price');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled) {
+          const price = typeof data.priceUsd === 'number' ? data.priceUsd : parseFloat(String(data.priceUsd));
+          if (!Number.isNaN(price)) setHemiUsd(price);
+        }
+      } catch {
+        // non-fatal
+      }
+    };
+    fetchHemi();
+    return () => { cancelled = true; };
+  }, []);
 
   // Load more function
   const loadMore = async () => {
@@ -227,7 +248,7 @@ function ActivityFeed({ rightRail = false }: { rightRail?: boolean }) {
                 </div>
                 <ul className="space-y-1.5">
                   {items.map((e) => (
-                    <FeedItem key={e.id} evt={e} />
+                    <FeedItem key={e.id} evt={e} hemiUsd={hemiUsd} />
                   ))}
                 </ul>
               </div>
@@ -278,7 +299,7 @@ function ActivityFeed({ rightRail = false }: { rightRail?: boolean }) {
 }
 
 // ---- Row ----
-function FeedItem({ evt }: { evt: FeedEvent }) {
+function FeedItem({ evt, hemiUsd }: { evt: FeedEvent; hemiUsd?: number | null }) {
   const color = evt.type==='sale' ? '#22C55E' : evt.type==='list' ? '#F59E0B' : '#F87171';
   
   // Format the title based on event type
@@ -294,8 +315,11 @@ function FeedItem({ evt }: { evt: FeedEvent }) {
       // For USDC, the USD value is just the USDC amount (since USDC ≈ $1)
       usdValue = evt.total.toFixed(2);
     } else {
-      // For HEMI, calculate: total HEMI amount × USD price per HEMI
-      usdValue = (evt.total * evt.unitUsd).toFixed(2);
+      // For HEMI, calculate using current HEMI USD price when available
+      const pricePerHemiUsd = typeof hemiUsd === 'number' && !Number.isNaN(hemiUsd)
+        ? hemiUsd
+        : evt.unitUsd; // fallback
+      usdValue = (evt.total * pricePerHemiUsd).toFixed(2);
     }
     
     if (evt.type === 'sale') {

@@ -6,6 +6,49 @@ import { MarketplaceHeader } from './MarketplaceHeader';
 import { Wallet, LogOut, Filter, X } from 'lucide-react';
 import { WalletConnectionWrapper } from './WalletConnectionWrapper';
 import { useAccount } from 'wagmi';
+
+// Utility function to format lockup duration in a user-friendly way
+const formatLockupDuration = (seconds: number): string => {
+  const days = Math.floor(seconds / (24 * 60 * 60));
+  const weeks = Math.floor(days / 7);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(days / 365);
+  
+  if (years >= 1) {
+    return years === 1 ? '1 year' : `${years} years`;
+  } else if (months >= 1) {
+    return months === 1 ? '1 month' : `${months} months`;
+  } else if (weeks >= 1) {
+    return weeks === 1 ? '1 week' : `${weeks} weeks`;
+  } else {
+    return days === 1 ? '1 day' : `${days} days`;
+  }
+};
+
+// Utility function to format unlock date with time
+const formatUnlockDate = (timestamp: string): string => {
+  const date = new Date(timestamp);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+// Utility function to format lockup start date with time
+const formatLockupStartDate = (timestamp: string): string => {
+  const date = new Date(timestamp);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
 interface VeHemiToken {
   id: string;
   price: number;
@@ -22,6 +65,9 @@ interface VeHemiToken {
     decimals: number;
   };
   sellerAddress?: string;
+  lockStartTimestamp?: string;
+  lockEndTimestamp?: string;
+  lockupDuration?: number; // in seconds
 }
 interface FilterState {
   hemiAmountRange: [number, number];
@@ -57,7 +103,9 @@ interface ApiListing {
     vehemiBalanceFormatted?: string;
     lockedAmountWei?: string;
     lockedAmountFormatted?: string;
+    lockStartTimestamp?: string;
     lockEndTimestamp?: string;
+    lockupDuration?: number;
     ownerAddress?: string;
   };
 }
@@ -138,11 +186,16 @@ export const MarketplacePage = () => {
       
       // Transform API response to match VeHemiToken interface
       const transformedTokens: VeHemiToken[] = data.listings.map((listing: ApiListing) => {
-        const lockEndTime = listing.nftToken.lockEndTimestamp 
-          ? new Date(listing.nftToken.lockEndTimestamp).getTime() / 1000 
-          : 0;
-        const now = Date.now() / 1000;
-        const unlocksIn = lockEndTime > now ? Math.ceil((lockEndTime - now) / (24 * 60 * 60)) : 0;
+        // Use lockupDuration from API if available, otherwise calculate from timestamps
+        let unlocksIn = 0;
+        if (listing.nftToken.lockupDuration) {
+          // Convert seconds to days
+          unlocksIn = Math.ceil(listing.nftToken.lockupDuration / (24 * 60 * 60));
+        } else if (listing.nftToken.lockEndTimestamp) {
+          const lockEndTime = new Date(listing.nftToken.lockEndTimestamp).getTime() / 1000;
+          const now = Date.now() / 1000;
+          unlocksIn = lockEndTime > now ? Math.ceil((lockEndTime - now) / (24 * 60 * 60)) : 0;
+        }
         
         const transformed: VeHemiToken = {
           id: listing.tokenId,
@@ -161,7 +214,10 @@ export const MarketplacePage = () => {
             name: listing.paymentToken.name,
             decimals: listing.paymentToken.decimals
           },
-          sellerAddress: listing.sellerAddress
+          sellerAddress: listing.sellerAddress,
+          lockStartTimestamp: listing.nftToken.lockStartTimestamp,
+          lockEndTimestamp: listing.nftToken.lockEndTimestamp,
+          lockupDuration: listing.nftToken.lockupDuration
         };
         
         console.log(`🔄 Transformed listing ${listing.tokenId}:`, {
@@ -223,6 +279,11 @@ export const MarketplacePage = () => {
     
     // Apply client-side filtering
     let filtered = allTokens.filter(token => {
+      // Add defensive checks to prevent undefined access
+      if (!filters.hemiAmountRange || !filters.unlocksInRange || !filters.paymentTokens) {
+        return false;
+      }
+      
       const hemiAmountOk = token.hemiAmount >= filters.hemiAmountRange[0] && token.hemiAmount <= filters.hemiAmountRange[1];
       const unlocksInOk = token.unlocksIn >= filters.unlocksInRange[0] && token.unlocksIn <= filters.unlocksInRange[1];
       const paymentTokenOk = filters.paymentTokens.includes(token.paymentToken.symbol);
@@ -374,6 +435,11 @@ export const MarketplacePage = () => {
                   sortOption={sortOption} 
                   onSortChange={setSortOption} 
                   totalCount={allTokens.filter(token => {
+                    // Add defensive checks to prevent undefined access
+                    if (!filters.hemiAmountRange || !filters.unlocksInRange || !filters.paymentTokens) {
+                      return false;
+                    }
+                    
                     const hemiAmountOk = token.hemiAmount >= filters.hemiAmountRange[0] && token.hemiAmount <= filters.hemiAmountRange[1];
                     const unlocksInOk = token.unlocksIn >= filters.unlocksInRange[0] && token.unlocksIn <= filters.unlocksInRange[1];
                     const paymentTokenOk = filters.paymentTokens.includes(token.paymentToken.symbol);
@@ -391,6 +457,11 @@ export const MarketplacePage = () => {
                 />
                 {(() => {
                   const totalFiltered = allTokens.filter(token => {
+                    // Add defensive checks to prevent undefined access
+                    if (!filters.hemiAmountRange || !filters.unlocksInRange || !filters.paymentTokens) {
+                      return false;
+                    }
+                    
                     const hemiAmountOk = token.hemiAmount >= filters.hemiAmountRange[0] && token.hemiAmount <= filters.hemiAmountRange[1];
                     const unlocksInOk = token.unlocksIn >= filters.unlocksInRange[0] && token.unlocksIn <= filters.unlocksInRange[1];
                     const paymentTokenOk = filters.paymentTokens.includes(token.paymentToken.symbol);

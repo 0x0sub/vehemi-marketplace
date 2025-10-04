@@ -98,7 +98,11 @@ export async function GET(request: NextRequest) {
           vehemiBalanceFormatted: listing.vehemi_balance_formatted || null,
           lockedAmountWei: listing.locked_amount_wei || null,
           lockedAmountFormatted: listing.locked_amount_formatted || null,
+          lockStartTimestamp: listing.lock_start_timestamp || null,
           lockEndTimestamp: listing.lock_end_timestamp || null,
+          lockupDuration: listing.lock_start_timestamp && listing.lock_end_timestamp 
+            ? Math.floor((new Date(listing.lock_end_timestamp).getTime() - new Date(listing.lock_start_timestamp).getTime()) / 1000)
+            : null,
           ownerAddress: listing.owner_address || null
         }
       })),

@@ -6,6 +6,49 @@ import { Tooltip } from './Tooltip';
 import { MarketplaceHeader } from './MarketplaceHeader';
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { CONTRACTS, MARKETPLACE_ABI } from '../lib/contracts';
+
+// Utility function to format lockup duration in a user-friendly way
+const formatLockupDuration = (seconds: number): string => {
+  const days = Math.floor(seconds / (24 * 60 * 60));
+  const weeks = Math.floor(days / 7);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(days / 365);
+  
+  if (years >= 1) {
+    return years === 1 ? '1 year' : `${years} years`;
+  } else if (months >= 1) {
+    return months === 1 ? '1 month' : `${months} months`;
+  } else if (weeks >= 1) {
+    return weeks === 1 ? '1 week' : `${weeks} weeks`;
+  } else {
+    return days === 1 ? '1 day' : `${days} days`;
+  }
+};
+
+// Utility function to format unlock date with time
+const formatUnlockDate = (timestamp: string): string => {
+  const date = new Date(timestamp);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+// Utility function to format lockup start date with time
+const formatLockupStartDate = (timestamp: string): string => {
+  const date = new Date(timestamp);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
 interface ListingToken {
   id: string;
   price: number;
@@ -22,6 +65,9 @@ interface ListingToken {
     decimals: number;
   };
   sellerAddress?: string;
+  lockStartTimestamp?: string;
+  lockEndTimestamp?: string;
+  lockupDuration?: number; // in seconds
 }
 interface SortOption {
   field: keyof Pick<ListingToken, 'price' | 'hemiAmount' | 'unlocksIn' | 'tokenId'> | 'unitPrice';
@@ -298,9 +344,28 @@ export const TokenListings = ({
                         </p>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="text-sm font-medium text-slate-300">
-                          <span>{formatDuration(t.unlocksIn)}</span>
-                        </p>
+                        <Tooltip 
+                          content={
+                            <div className="text-xs">
+                              <div className="font-medium text-white mb-1">Lock Details</div>
+                              <div className="text-slate-300 space-y-1">
+                                {t.lockStartTimestamp && (
+                                  <div>Started: {formatLockupStartDate(t.lockStartTimestamp)}</div>
+                                )}
+                                {t.lockEndTimestamp && (
+                                  <div>Unlocks: {formatUnlockDate(t.lockEndTimestamp)}</div>
+                                )}
+                                {t.lockupDuration && (
+                                  <div>Lockup period: {formatLockupDuration(t.lockupDuration)}</div>
+                                )}
+                              </div>
+                            </div>
+                          }
+                        >
+                          <p className="text-sm font-medium text-slate-300 cursor-help">
+                            <span>{formatDuration(t.unlocksIn)}</span>
+                          </p>
+                        </Tooltip>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">

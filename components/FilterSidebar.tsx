@@ -35,17 +35,18 @@ export const FilterSidebar = ({
   };
   const handleResetFilters = () => {
     const resetFilters: FilterState = {
-      hemiAmountRange: [0, 100_000],
+      hemiAmountRange: [0, 100000],
       unlocksInRange: [0, 1460],
-      unitPriceRange: [0, 1], // USD range for unit price
       paymentTokens: ['HEMI', 'USDC']
+      // Note: unitPriceRange is undefined in initial state, not [0, 1]
     };
     setLocalFilters(resetFilters);
     onFiltersChange(resetFilters);
   };
   const updateHemiRange = (index: 0 | 1, value: number) => {
     const clamped = Math.max(0, Math.min(100_000, value));
-    const newRange = [...localFilters.hemiAmountRange] as [number, number];
+    const currentRange = localFilters.hemiAmountRange ?? [0, 100000];
+    const newRange = [...currentRange] as [number, number];
     newRange[index] = clamped;
     if (index === 0 && clamped > newRange[1]) newRange[1] = clamped;
     if (index === 1 && clamped < newRange[0]) newRange[0] = clamped;
@@ -55,7 +56,8 @@ export const FilterSidebar = ({
     });
   };
   const updateUnlocksInRange = (index: 0 | 1, value: number) => {
-    const newRange = [...localFilters.unlocksInRange] as [number, number];
+    const currentRange = localFilters.unlocksInRange ?? [0, 1460];
+    const newRange = [...currentRange] as [number, number];
     newRange[index] = value;
     if (index === 0 && value > newRange[1]) newRange[1] = value;
     if (index === 1 && value < newRange[0]) newRange[0] = value;
@@ -86,7 +88,7 @@ export const FilterSidebar = ({
   };
 
   const togglePaymentToken = (token: string) => {
-    const currentTokens = localFilters.paymentTokens;
+    const currentTokens = localFilters.paymentTokens ?? ['HEMI', 'USDC'];
     const newTokens = currentTokens.includes(token)
       ? currentTokens.filter(t => t !== token)
       : [...currentTokens, token];
@@ -114,15 +116,15 @@ export const FilterSidebar = ({
           </h3>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <input type="range" min={0} max={100000} step={10} value={localFilters.hemiAmountRange[0]} onChange={e => updateHemiRange(0, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
+              <input type="range" min={0} max={100000} step={10} value={localFilters.hemiAmountRange?.[0] ?? 0} onChange={e => updateHemiRange(0, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
               <div className="relative">
-                <input type="number" inputMode="numeric" min={0} max={100000} step={10} value={localFilters.hemiAmountRange[0]} onChange={e => updateHemiRange(0, Number(e.target.value))} className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-[color:var(--hemi-cyan)]/40 focus:outline-none placeholder:text-slate-500" aria-label="Minimum HEMI amount" />
+                <input type="number" inputMode="numeric" min={0} max={100000} step={10} value={localFilters.hemiAmountRange?.[0] ?? 0} onChange={e => updateHemiRange(0, Number(e.target.value))} className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-[color:var(--hemi-cyan)]/40 focus:outline-none placeholder:text-slate-500" aria-label="Minimum HEMI amount" />
               </div>
             </div>
             <div className="space-y-2">
-              <input type="range" min={0} max={100000} step={10} value={localFilters.hemiAmountRange[1]} onChange={e => updateHemiRange(1, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
+              <input type="range" min={0} max={100000} step={10} value={localFilters.hemiAmountRange?.[1] ?? 100000} onChange={e => updateHemiRange(1, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
               <div className="relative">
-                <input type="number" inputMode="numeric" min={0} max={1000000} step={10} value={localFilters.hemiAmountRange[1]} onChange={e => updateHemiRange(1, Number(e.target.value))} className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-[color:var(--hemi-cyan)]/40 focus:outline-none placeholder:text-slate-500" aria-label="Maximum HEMI amount" />
+                <input type="number" inputMode="numeric" min={0} max={1000000} step={10} value={localFilters.hemiAmountRange?.[1] ?? 100000} onChange={e => updateHemiRange(1, Number(e.target.value))} className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-[color:var(--hemi-cyan)]/40 focus:outline-none placeholder:text-slate-500" aria-label="Maximum HEMI amount" />
               </div>
             </div>
           </div>
@@ -136,15 +138,15 @@ export const FilterSidebar = ({
           </h3>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <input type="range" min={7} max={1460} step={7} value={localFilters.unlocksInRange[0]} onChange={e => updateUnlocksInRange(0, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
+              <input type="range" min={7} max={1460} step={7} value={localFilters.unlocksInRange?.[0] ?? 0} onChange={e => updateUnlocksInRange(0, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
               <div className="text-sm font-medium text-slate-100">
-                <span>{formatDuration(localFilters.unlocksInRange[0])}</span>
+                <span>{formatDuration(localFilters.unlocksInRange?.[0] ?? 0)}</span>
               </div>
             </div>
             <div className="space-y-2">
-              <input type="range" min={7} max={1460} step={7} value={localFilters.unlocksInRange[1]} onChange={e => updateUnlocksInRange(1, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
+              <input type="range" min={7} max={1460} step={7} value={localFilters.unlocksInRange?.[1] ?? 1460} onChange={e => updateUnlocksInRange(1, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
               <div className="text-sm font-medium text-slate-100">
-                <span>{formatDuration(localFilters.unlocksInRange[1])}</span>
+                <span>{formatDuration(localFilters.unlocksInRange?.[1] ?? 1460)}</span>
               </div>
             </div>
           </div>
@@ -186,11 +188,11 @@ export const FilterSidebar = ({
               </div>
               <span className="text-sm font-medium">HEMI</span>
               <div className={`ml-auto w-4 h-4 rounded border-2 flex items-center justify-center ${
-                localFilters.paymentTokens.includes('HEMI')
+                localFilters.paymentTokens?.includes('HEMI')
                   ? 'bg-blue-500 border-blue-500'
                   : 'border-slate-500'
               }`}>
-                {localFilters.paymentTokens.includes('HEMI') && (
+                {localFilters.paymentTokens?.includes('HEMI') && (
                   <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
@@ -207,11 +209,11 @@ export const FilterSidebar = ({
               </div>
               <span className="text-sm font-medium">USDC</span>
               <div className={`ml-auto w-4 h-4 rounded border-2 flex items-center justify-center ${
-                localFilters.paymentTokens.includes('USDC')
+                localFilters.paymentTokens?.includes('USDC')
                   ? 'bg-blue-500 border-blue-500'
                   : 'border-slate-500'
               }`}>
-                {localFilters.paymentTokens.includes('USDC') && (
+                {localFilters.paymentTokens?.includes('USDC') && (
                   <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>

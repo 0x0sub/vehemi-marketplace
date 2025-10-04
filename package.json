@@ -21,6 +21,7 @@
     "create-lock": "hardhat run scripts/create-lock.js --network hemiSepolia",
     "create-lock-custom": "hardhat run scripts/create-lock-custom.js --network hemiSepolia",
     "setup-database": "node scripts/setup-database.js",
+    "setup-database-new": "node scripts/setup-database-new.js",
     "test-database": "node scripts/test-database.js",
     "test-offer": "hardhat run scripts/test-create-offer.js --network hemiSepolia",
     "test-offer-3": "NUMBER_OF_OFFERS=3 hardhat run scripts/test-create-offer.js --network hemiSepolia",
@@ -32,10 +33,15 @@
     "approve-marketplace": "hardhat run scripts/approve-marketplace.js --network hemiSepolia",
     "setup-indexer": "node scripts/setup-indexer-tables.js",
     "indexer": "node scripts/indexer.js",
+    "indexer-new": "node scripts/indexer/index.js",
     "indexer-status": "node scripts/indexer-status.js",
     "indexer-diagnostic": "node scripts/indexer-diagnostic.js",
     "fix-events-table": "node scripts/fix-events-table.js",
     "fix-database-schema": "node scripts/fix-database-schema.js",
+    "add-decoded-data": "node scripts/add-decoded-data-field.js",
+    "fix-duplicate-events": "node scripts/fix-duplicate-events.js",
+    "fix-duplicate-listings": "node scripts/fix-duplicate-listings.js",
+    "add-event-uid": "node scripts/add-event-uid-field.js",
     "backfill-sale-transactions": "node scripts/backfill-sale-transactions.js"
   },
   "dependencies": {
