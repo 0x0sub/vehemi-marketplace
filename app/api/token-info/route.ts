@@ -91,6 +91,8 @@ export async function GET(request: NextRequest) {
       sellerAddress: listing.seller_address,
       usdValue,
       hemiPrice: hemiUsdPrice,
+      lockStartTimestamp: listing.lock_start_timestamp,
+      lockEndTimestamp: listing.lock_end_timestamp,
     }
 
     return NextResponse.json(responseBody)

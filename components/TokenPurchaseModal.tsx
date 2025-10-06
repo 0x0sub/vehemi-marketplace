@@ -24,6 +24,8 @@ interface VeHemiToken {
     decimals: number;
   };
   sellerAddress?: string;
+  lockStartTimestamp?: string;
+  lockEndTimestamp?: string;
 }
 
 interface TokenPurchaseModalProps {
@@ -217,6 +219,18 @@ export const TokenPurchaseModal = ({
       year: 'numeric',
       month: 'short',
       day: '2-digit'
+    });
+  };
+
+  const formatUnlockDateTime = (timestamp?: string): string => {
+    if (!timestamp) return '—';
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -438,7 +452,17 @@ export const TokenPurchaseModal = ({
                         <div className="rounded-xl bg-[#0B1218] p-4 border border-[#1E2937]">
                           <div className="text-xs uppercase tracking-wide text-[#93A4B7] mb-1">You get</div>
                           <div className="flex items-end gap-2">
-                            <div className="text-2xl font-semibold" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatAmount(token.hemiAmount)} locked HEMI</div>
+                            <Tooltip 
+                              content={
+                                <div className="text-xs text-slate-300">
+                                  {token.hemiAmount.toFixed(6)} HEMI
+                                </div>
+                              }
+                              position="bottom"
+                              className="!mt-1"
+                            >
+                              <div className="text-2xl font-semibold" style={{ fontVariantNumeric: 'tabular-nums' }}>{formatAmount(token.hemiAmount)} locked HEMI</div>
+                            </Tooltip>
                           </div>
                           <div className="mt-2 text-sm text-[#93A4B7] flex items-center gap-2">
                             <span className="inline-flex items-center gap-1">
@@ -520,6 +544,14 @@ export const TokenPurchaseModal = ({
                               <div className="flex items-center justify-between rounded-lg bg-[#0F141B] p-3 border border-[#1E2937]">
                                 <span className="text-[#93A4B7]">Network</span>
                                 <span>Hemi</span>
+                              </div>
+                              <div className="flex items-center justify-between rounded-lg bg-[#0F141B] p-3 border border-[#1E2937]">
+                                <span className="text-[#93A4B7]">Locked HEMI:</span>
+                                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{token.hemiAmount.toFixed(6)} HEMI</span>
+                              </div>
+                              <div className="flex items-center justify-between rounded-lg bg-[#0F141B] p-3 border border-[#1E2937]">
+                                <span className="text-[#93A4B7]">Unlock Date</span>
+                                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{formatUnlockDateTime(token.lockEndTimestamp)}</span>
                               </div>
                             </div>
                           </div>
