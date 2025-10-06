@@ -71,7 +71,6 @@ export const VeHemiPositionCard = ({
     try {
       const currentListing = await refetchListing();
       if (!currentListing.data || !(currentListing.data as any).isActive) {
-        console.log('Listing no longer exists, updating UI');
         onCancelListing(position.id);
         return;
       }
@@ -97,7 +96,6 @@ export const VeHemiPositionCard = ({
   // Handle transaction completion
   React.useEffect(() => {
     if (isConfirmed && isCancelling) {
-      console.log('Transaction confirmed, starting database polling');
       setIsCancelling(false);
       // Start polling to check if database has been updated
       startDatabaseSyncPolling();
@@ -133,7 +131,6 @@ export const VeHemiPositionCard = ({
           if (previousListings.includes(position.tokenId) && !currentListings.includes(position.tokenId)) {
             // Listing was cancelled!
             clearInterval(pollInterval);
-            console.log(`Listing #${position.tokenId} successfully cancelled`);
             
             // Update UI
             onCancelListing(position.id);

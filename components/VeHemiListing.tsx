@@ -113,18 +113,6 @@ export default function VeHemiListing({
   });
 
   const isTokenApproved = isApprovedForAll || approvedAddress === marketplaceAddress;
-  
-  // Debug logging
-  useEffect(() => {
-    console.log('Approval state:', {
-      isApprovedForAll,
-      approvedAddress,
-      marketplaceAddress,
-      isTokenApproved,
-      approvalChecked,
-      selectedTokenId
-    });
-  }, [isApprovedForAll, approvedAddress, marketplaceAddress, isTokenApproved, approvalChecked, selectedTokenId]);
 
   // Contract write functions
   const { writeContract: writeContractApproval, data: approvalHash } = useWriteContract();
@@ -189,7 +177,6 @@ export default function VeHemiListing({
     
     try {
       setIsApproving(true);
-      console.log('Approving marketplace:', { veHemiAddress, marketplaceAddress });
       
       await writeContractApproval({
         address: veHemiAddress,
@@ -235,14 +222,6 @@ export default function VeHemiListing({
         return;
       }
       
-      console.log('Listing parameters:', {
-        tokenId: selectedTokenId,
-        price: priceInWei.toString(),
-        paymentToken: paymentTokenAddress,
-        duration: durationInSeconds.toString(),
-        marketplace: marketplaceAddress
-      });
-      
       await writeContractListing({
         address: marketplaceAddress,
         abi: MARKETPLACE_ABI,
@@ -267,18 +246,13 @@ export default function VeHemiListing({
 
   // Handle form submission
   const handleSubmit = async () => {
-    console.log('Submit clicked:', { isTokenApproved, canSubmit, selectedTokenId, price });
-    
     if (!canSubmit) {
-      console.log('Cannot submit:', { selectedTokenId, price, durationHours });
       return;
     }
     
     if (!isTokenApproved) {
-      console.log('Token not approved, requesting approval...');
       await handleApproval();
     } else {
-      console.log('Token approved, creating listing...');
       await handleListing();
     }
   };

@@ -55,16 +55,6 @@ export const TokenPurchaseModal = ({
     const result = connectedUser && token?.sellerAddress ? 
       connectedUser.toLowerCase() === token.sellerAddress.toLowerCase() : false;
     
-    // Debug logging
-    if (connectedUser && token?.sellerAddress) {
-      console.log('🔍 Modal ownership check:', {
-        connectedUser: connectedUser.toLowerCase(),
-        sellerAddress: token.sellerAddress.toLowerCase(),
-        isMatch: result,
-        tokenId: token.tokenId
-      });
-    }
-    
     return result;
   };
 
@@ -291,13 +281,6 @@ export const TokenPurchaseModal = ({
     if (currentAllowance !== undefined && token) {
       const hasEnoughAllowance = currentAllowance >= priceInWei;
       setNeedsApproval(!hasEnoughAllowance);
-      
-      console.log('Allowance check:', {
-        currentAllowance: currentAllowance.toString(),
-        priceInWei: priceInWei.toString(),
-        hasEnoughAllowance,
-        needsApproval: !hasEnoughAllowance
-      });
     }
   }, [currentAllowance, priceInWei, token]);
   
@@ -335,8 +318,6 @@ export const TokenPurchaseModal = ({
     if (isBuyConfirmed && isBuying) {
       setIsBuying(false);
       onClose();
-      // You can add success notification here
-      console.log('Purchase successful!');
     }
   }, [isBuyConfirmed, isBuying, onClose]);
   
@@ -346,12 +327,6 @@ export const TokenPurchaseModal = ({
     setIsApproving(true);
     
     try {
-      console.log('Approving token:', {
-        tokenAddress: token.paymentToken.address,
-        priceInWei: priceInWei.toString(),
-        decimals: token.paymentToken.decimals
-      });
-      
       await writeApproveContract({
         address: token.paymentToken.address as `0x${string}`,
         abi: ERC20_ABI,
@@ -381,19 +356,6 @@ export const TokenPurchaseModal = ({
     setIsBuying(true);
     
     try {
-      console.log('Attempting to buy NFT:', {
-        tokenId: token.tokenId,
-        price: token.price,
-        paymentToken: token.paymentToken,
-        priceInWei: priceInWei.toString(),
-        userBalance: userBalance?.toString(),
-        userBalance18Decimals: userBalance18Decimals.toString(),
-        currentAllowance: currentAllowance?.toString(),
-        hasEnoughBalance: hasEnoughBalance,
-        hasEnoughAllowance: currentAllowance && currentAllowance >= priceInWei,
-        listingData: listingData
-      });
-      
       await writeBuyContract({
         address: CONTRACTS.MARKETPLACE,
         abi: MARKETPLACE_ABI,

@@ -27,12 +27,6 @@ export function WalletSelectionModal({ isOpen, onClose }: WalletSelectionModalPr
         const hasInjectedWallet = isInjectedWalletAvailable();
         const hasMetaMask = isMetaMaskInstalled();
         
-        console.log('🔍 Wallet availability check:', {
-          hasInjectedWallet,
-          hasMetaMask,
-          connectors: connectors.length
-        });
-        
         setIsWalletAvailable(hasInjectedWallet || connectors.length > 0);
       };
       
@@ -45,10 +39,6 @@ export function WalletSelectionModal({ isOpen, onClose }: WalletSelectionModalPr
     setConnectionError(null);
     
     try {
-      console.log('🔄 Connecting with:', connector.name);
-      console.log('📱 Connector type:', connector.type);
-      console.log('📱 Is mobile:', isMobile);
-      
       // Pre-connection checks
       if (connector.name.toLowerCase().includes('metamask') && !isMetaMaskInstalled()) {
         throw new Error('MetaMask is not installed. Please install MetaMask from the Chrome Web Store.');
@@ -56,11 +46,6 @@ export function WalletSelectionModal({ isOpen, onClose }: WalletSelectionModalPr
       
       if (connector.type === 'injected' && !isInjectedWalletAvailable()) {
         throw new Error('No injected wallet detected. Please install a compatible wallet extension.');
-      }
-      
-      // Add mobile-specific handling
-      if (isMobile && connector.type === 'injected') {
-        console.log('⚠️ Injected connector on mobile - may not work');
       }
       
       await connect({ connector });

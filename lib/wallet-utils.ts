@@ -21,7 +21,6 @@ export const isMetaMaskAvailable = async (): Promise<boolean> => {
     const accounts = await window.ethereum.request({ method: 'eth_accounts' });
     return accounts.length > 0;
   } catch (error) {
-    console.log('MetaMask is installed but not unlocked:', error);
     return false;
   }
 };

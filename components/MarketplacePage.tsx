@@ -164,16 +164,6 @@ export const MarketplacePage = () => {
       }
       
       const data = await response.json();
-      console.log('📊 API Response:', {
-        listingsCount: data.listings?.length || 0,
-        totalCount: data.pagination?.totalCount || 0,
-        listings: data.listings?.map((l: any) => ({
-          id: l.id,
-          tokenId: l.tokenId,
-          priceFormatted: l.priceFormatted,
-          paymentToken: l.paymentToken?.symbol
-        }))
-      });
       
       // Transform API response to match VeHemiToken interface
       const transformedTokens: VeHemiToken[] = data.listings.map((listing: ApiListing) => {
@@ -208,19 +198,6 @@ export const MarketplacePage = () => {
           lockupDuration: listing.nftToken.lockupDuration
         };
         
-        console.log(`🔄 Transformed listing ${listing.tokenId}:`, {
-          original: {
-            lockEndTimestamp: listing.nftToken.lockEndTimestamp,
-            durationSeconds: listing.durationSeconds,
-            vehemiBalanceFormatted: listing.nftToken.vehemiBalanceFormatted
-          },
-          transformed: {
-            unlocksIn: transformed.unlocksIn,
-            hemiAmount: transformed.hemiAmount,
-            price: transformed.price
-          }
-        });
-        
         return transformed;
       });
       
@@ -253,18 +230,6 @@ export const MarketplacePage = () => {
   };
 
   const filteredAndSortedTokens = useMemo(() => {
-    console.log('🔍 Processing tokens:', {
-      totalTokens: allTokens.length,
-      filters,
-      tokenDetails: allTokens.map(t => ({
-        id: t.id,
-        hemiAmount: t.hemiAmount,
-        unlocksIn: t.unlocksIn,
-        price: t.price,
-        paymentToken: t.paymentToken.symbol
-      }))
-    });
-    
     // Apply client-side filtering
     let filtered = allTokens.filter(token => {
       // Add defensive checks to prevent undefined access
@@ -276,15 +241,6 @@ export const MarketplacePage = () => {
       const unlocksInOk = token.unlocksIn >= filters.unlocksInRange[0] && token.unlocksIn <= filters.unlocksInRange[1];
       const paymentTokenOk = filters.paymentTokens.includes(token.paymentToken.symbol);
       
-      console.log(`Token ${token.id}:`, {
-        hemiAmount: token.hemiAmount,
-        hemiAmountOk,
-        unlocksIn: token.unlocksIn,
-        unlocksInOk,
-        paymentToken: token.paymentToken.symbol,
-        paymentTokenOk
-      });
-      
       const base = hemiAmountOk && unlocksInOk && paymentTokenOk;
       if (!base) return false;
       
@@ -295,8 +251,6 @@ export const MarketplacePage = () => {
       }
       return true;
     });
-    
-    console.log('✅ Filtered tokens:', filtered.length);
     
     // Apply sorting
     const sorted = filtered.sort((a, b) => {
@@ -326,14 +280,6 @@ export const MarketplacePage = () => {
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
     const paginatedTokens = sorted.slice(startIndex, endIndex);
-    
-    console.log('📄 Paginated tokens:', {
-      totalFiltered: sorted.length,
-      currentPage: page,
-      startIndex,
-      endIndex,
-      paginatedCount: paginatedTokens.length
-    });
     
     return paginatedTokens;
   }, [allTokens, filters, sortOption, page, limit]);

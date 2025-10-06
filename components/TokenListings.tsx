@@ -182,16 +182,6 @@ export const TokenListings = ({
     const result = connectedUser && token.sellerAddress ? 
       connectedUser.toLowerCase() === token.sellerAddress.toLowerCase() : false;
     
-    // Debug logging
-    if (connectedUser && token.sellerAddress) {
-      console.log('🔍 Checking ownership:', {
-        connectedUser: connectedUser.toLowerCase(),
-        sellerAddress: token.sellerAddress.toLowerCase(),
-        isMatch: result,
-        tokenId: token.tokenId
-      });
-    }
-    
     return result;
   };
   // @return

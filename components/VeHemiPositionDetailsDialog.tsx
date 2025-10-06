@@ -52,7 +52,6 @@ export const VeHemiPositionDetailsDialog = () => {
   };
   const unitPrice = mockToken.hemiAmount > 0 ? mockToken.price / mockToken.hemiAmount : 0;
   const handleBuy = () => {
-    console.log('Buy position:', mockToken.id, 'with', currency);
     setIsOpen(false);
   };
   const handleClose = () => {

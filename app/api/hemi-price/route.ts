@@ -23,12 +23,9 @@ export async function GET() {
       );
     }
 
-    console.log('Fetching price data for HEMI token:', HEMI_TOKEN_ADDRESS);
-
     // Check if database connection is working
     try {
       await pool.query('SELECT 1');
-      console.log('Database connection successful');
     } catch (dbError) {
       console.error('Database connection failed:', dbError);
       return NextResponse.json(
@@ -46,9 +43,7 @@ export async function GET() {
       LIMIT 1
     `;
     
-    console.log('Executing current price query...');
     const currentPriceResult = await pool.query(currentPriceQuery, [HEMI_TOKEN_ADDRESS]);
-    console.log('Current price result:', currentPriceResult.rows.length, 'rows');
     
     // Get price history for sparkline (last 24 hours with 4-hour intervals)
     const priceHistoryQuery = `
@@ -65,9 +60,7 @@ export async function GET() {
       LIMIT 6
     `;
     
-    console.log('Executing price history query...');
     const priceHistoryResult = await pool.query(priceHistoryQuery, [HEMI_TOKEN_ADDRESS]);
-    console.log('Price history result:', priceHistoryResult.rows.length, 'rows');
     
     // Get price from 24 hours ago for change calculation
     const price24hAgoQuery = `
@@ -79,9 +72,7 @@ export async function GET() {
       LIMIT 1
     `;
     
-    console.log('Executing 24h ago price query...');
     const price24hAgoResult = await pool.query(price24hAgoQuery, [HEMI_TOKEN_ADDRESS]);
-    console.log('24h ago price result:', price24hAgoResult.rows.length, 'rows');
     
     // Process the data
     const currentPrice = currentPriceResult.rows[0];
@@ -89,7 +80,6 @@ export async function GET() {
     const price24hAgo = price24hAgoResult.rows[0];
     
     if (!currentPrice) {
-      console.log('No current price found, returning null data');
       return NextResponse.json({
         priceUsd: null,
         change24h: null,
@@ -116,7 +106,6 @@ export async function GET() {
       sparkline: sparkline
     };
 
-    console.log('Successfully fetched price data:', responseData);
     return NextResponse.json(responseData);
   } catch (error) {
     console.error('Error fetching HEMI price data:', error);

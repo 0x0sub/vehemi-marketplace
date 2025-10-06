@@ -109,15 +109,12 @@ export function VeHemiListingDrawer({
 
       // Check which tokens are already listed
       const listedTokens = await checkListedTokens(tokenIds.map(id => id.toString()));
-      console.log('Listed tokens:', listedTokens);
-      console.log('All wallet tokens:', tokens.map(t => ({ id: t.id, hemiLocked: t.hemiLocked })));
       
       // Filter out listed tokens and sort by locked HEMI in descending order
       const unlistedTokens = tokens
         .filter(token => !listedTokens.includes(token.id))
         .sort((a, b) => b.hemiLocked - a.hemiLocked);
 
-      console.log('Unlisted tokens after filtering:', unlistedTokens.map(t => ({ id: t.id, hemiLocked: t.hemiLocked })));
       setWalletTokens(unlistedTokens);
     } catch (error) {
       console.error('Failed to fetch wallet tokens:', error);

@@ -23,19 +23,21 @@ export function SiteHeader() {
           </button>
 
           <div className="flex items-start gap-3 sm:gap-4 min-w-0 flex-1">
-            <div className="flex-shrink-0 self-start sm:self-center">
-            <img 
+            <Link href="/" className="flex-shrink-0 self-start sm:self-center cursor-pointer">
+              <img 
                 src="/vehemi-logo.svg" 
                 alt="Vehemi logo" 
                 className="h-9 w-9 sm:h-16 sm:w-16"
                 aria-label="Vehemi logo"
                 role="img"
               />
-            </div>
+            </Link>
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-4xl font-semibold tracking-tight">
-                <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent"><span className="text-[color:var(--hemi-orange)] font-semibold">veHEMI</span> Marketplace</span>
-              </h1>
+              <Link href="/" className="cursor-pointer">
+                <h1 className="text-2xl sm:text-4xl font-semibold tracking-tight">
+                  <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent"><span className="text-[color:var(--hemi-orange)] font-semibold">veHEMI</span> Marketplace</span>
+                </h1>
+              </Link>
               <p className="mt-1 sm:mt-2 text-slate-400 text-sm sm:text-base hidden sm:block">
                 <span>Liquid Trading Hub for Locked veHEMI</span>
               </p>
@@ -52,6 +54,16 @@ export function SiteHeader() {
               }`}
             >
               <span>Marketplace</span>
+            </Link>
+            <Link 
+              href="/about" 
+              className={`text-sm font-medium transition-colors ${
+                pathname === '/about' 
+                  ? 'text-white' 
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <span>About</span>
             </Link>
             <Link 
               href="/my-vehemi" 
@@ -99,6 +111,19 @@ export function SiteHeader() {
                   }`}
                 >
                   <span>Marketplace</span>
+                  <span aria-hidden="true" className="text-slate-500">›</span>
+                </Link>
+              </li>
+              <li className="py-2">
+                <Link 
+                  href="/about" 
+                  className={`flex items-center justify-between transition-colors ${
+                    pathname === '/about' 
+                      ? 'text-white' 
+                      : 'text-slate-300 hover:text-white'
+                  }`}
+                >
+                  <span>About</span>
                   <span aria-hidden="true" className="text-slate-500">›</span>
                 </Link>
               </li>

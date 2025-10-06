@@ -1,6 +1,7 @@
 export default function SiteFooter({
   brand = "veHEMI.com Marketplace",
   byline = "Built for all Hemigos by @sub_research",
+  aboutUrl = "/about",
   faqUrl = "/faq",
   activityUrl = "/activity",
   docsUrl = "#",
@@ -15,6 +16,7 @@ export default function SiteFooter({
 }: {
   brand?: string;
   byline?: string;
+  aboutUrl?: string;
   faqUrl?: string;
   activityUrl?: string;
   docsUrl?: string;
@@ -42,6 +44,7 @@ export default function SiteFooter({
         <nav className="space-y-2">
           <div className="text-sm font-semibold text-[#E5EDF5]">Resources</div>
           <ul className="flex flex-wrap gap-3 text-sm">
+            <li><a className="text-[#93A4B7] hover:text-white" href={aboutUrl}>About</a></li>
             <li><a className="text-[#93A4B7] hover:text-white" href={faqUrl}>FAQ</a></li>
             <li><a className="text-[#93A4B7] hover:text-white" href={activityUrl}>Activity</a></li>
              {/*

@@ -21,7 +21,6 @@ export const WalletConnectionWrapper = () => {
   const handleConnect = async () => {
     // This function is now handled by the WalletSelectionModal
     // The modal will show all available wallet options
-    console.log('🔄 Wallet selection modal will handle connection...');
   };
 
   const handleDisconnect = () => {
