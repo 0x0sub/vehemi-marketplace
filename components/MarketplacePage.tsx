@@ -106,7 +106,7 @@ export const MarketplacePage = () => {
   const { address } = useAccount();
   const [filters, setFilters] = useState<FilterState>({
     hemiAmountRange: [0, 100000],
-    unlocksInRange: [0, 1460],
+    unlocksInRange: [0, 1500],
     paymentTokens: ['HEMI', 'USDC']
   });
   const [sortOption, setSortOption] = useState<SortOption>({

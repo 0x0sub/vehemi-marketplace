@@ -36,7 +36,7 @@ export const FilterSidebar = ({
   const handleResetFilters = () => {
     const resetFilters: FilterState = {
       hemiAmountRange: [0, 100000],
-      unlocksInRange: [0, 1460],
+      unlocksInRange: [0, 1500],
       paymentTokens: ['HEMI', 'USDC']
       // Note: unitPriceRange is undefined in initial state, not [0, 1]
     };
@@ -56,7 +56,7 @@ export const FilterSidebar = ({
     });
   };
   const updateUnlocksInRange = (index: 0 | 1, value: number) => {
-    const currentRange = localFilters.unlocksInRange ?? [0, 1460];
+    const currentRange = localFilters.unlocksInRange ?? [0, 1500];
     const newRange = [...currentRange] as [number, number];
     newRange[index] = value;
     if (index === 0 && value > newRange[1]) newRange[1] = value;
@@ -138,15 +138,15 @@ export const FilterSidebar = ({
           </h3>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <input type="range" min={7} max={1460} step={7} value={localFilters.unlocksInRange?.[0] ?? 0} onChange={e => updateUnlocksInRange(0, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
+              <input type="range" min={7} max={1500} step={7} value={localFilters.unlocksInRange?.[0] ?? 0} onChange={e => updateUnlocksInRange(0, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
               <div className="text-sm font-medium text-slate-100">
                 <span>{formatDuration(localFilters.unlocksInRange?.[0] ?? 0)}</span>
               </div>
             </div>
             <div className="space-y-2">
-              <input type="range" min={7} max={1460} step={7} value={localFilters.unlocksInRange?.[1] ?? 1460} onChange={e => updateUnlocksInRange(1, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
+              <input type="range" min={7} max={1500} step={7} value={localFilters.unlocksInRange?.[1] ?? 1500} onChange={e => updateUnlocksInRange(1, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
               <div className="text-sm font-medium text-slate-100">
-                <span>{formatDuration(localFilters.unlocksInRange?.[1] ?? 1460)}</span>
+                <span>{formatDuration(localFilters.unlocksInRange?.[1] ?? 1500)}</span>
               </div>
             </div>
           </div>
