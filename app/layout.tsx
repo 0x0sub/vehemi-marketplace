@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     siteName: 'veHEMI Marketplace',
     images: [
       {
-        url: '/vehemi-og.jpg',
+        url: 'https://vehemi.com/vehemi-og.jpg',
         width: 1200,
         height: 630,
         alt: 'veHEMI Marketplace',
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'veHEMI Marketplace - Trade locked HEMI',
     description: 'Trade locked HEMI on the P2P marketplace for veHemi NFTs',
-    images: ['/vehemi-og.jpg'],
+    images: ['https://vehemi.com/vehemi-og.jpg'],
   },
 }
 
