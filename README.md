@@ -58,9 +58,31 @@ npm run dev
 - `npm run build`: Build for production
 - `npm run lint`: Run ESLint
 
+## Smart Contracts
+
+The marketplace smart contract are deployed and verified on Hemi Network:
+- **Marketplace Contract**: [View on Explorer]
+
+The contract is upgradeable using the proxy pattern and have been thoroughly tested.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Support
+
+- **Telegram**: https://t.me/vehemi
+- **GitHub Issues**: https://github.com/0x0sub/vehemi-marketplace/issues
+
+## Disclaimer
+
+This marketplace is not affiliated with Hemi Labs. Use at your own risk. Always verify contract addresses and do your own research before trading.
+
 ## License
 
-MIT License
+MIT License - see the [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2025 veHEMI Marketplace
 
 
 

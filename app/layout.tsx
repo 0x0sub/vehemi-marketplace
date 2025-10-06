@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'veHEMI Marketplace - Trade locked HEMI veHEMI.com',
-  description: 'Trade locked HEMI on the P2P marketplace for veHemi NFTs - veHEMI.com',
+  description: 'Get instant liquidity for locked HEMI or buy at a discount. First P2P marketplace for veHEMI NFTs.',
   icons: {
     icon: [
       { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
@@ -23,8 +23,8 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   openGraph: {
-    title: 'veHEMI Marketplace - Trade locked HEMI',
-    description: 'Trade locked HEMI on the P2P marketplace for veHemi NFTs',
+    title: 'veHEMI Marketplace - Unlock Liquidity or Buy HEMI at Discount',
+    description: 'Trade locked HEMI positions peer-to-peer. Sellers get instant cash, buyers save. First marketplace for veHEMI NFTs on Hemi Network.',
     url: 'https://vehemi.com',
     siteName: 'veHEMI Marketplace',
     images: [
@@ -40,8 +40,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'veHEMI Marketplace - Trade locked HEMI',
-    description: 'Trade locked HEMI on the P2P marketplace for veHemi NFTs',
+    title: 'veHEMI Marketplace - Turn Locked HEMI Into Liquidity',
+    description: 'Get instant cash for locked HEMI or buy positions at a discount. First P2P marketplace for veHEMI NFTs. Zero buyer fees.',
     images: ['https://vehemi.com/vehemi-og.jpg'],
   },
 }

@@ -7,7 +7,7 @@ export default function SiteFooter({
   docsUrl = "#",
   termsUrl = "#",
   privacyUrl = "#",
-  xUrl = "https://x.com/sub_research",
+  xUrl = "https://x.com/vehemi_com",
   githubUrl = "https://github.com/0x0sub/vehemi-marketplace",
   discordUrl = "#",
   telegramUrl = "https://t.me/vehemi",
