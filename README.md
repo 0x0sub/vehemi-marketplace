@@ -61,7 +61,7 @@ npm run dev
 ## Smart Contracts
 
 The marketplace smart contract are deployed and verified on Hemi Network:
-- **Marketplace Contract**: [View on Explorer]
+- **Marketplace Contract**: https://explorer.hemi.xyz/address/0x01Cc5c788556dAaBa25F772AEb92dCAbc59dF2a3
 
 The contract is upgradeable using the proxy pattern and have been thoroughly tested.
 
