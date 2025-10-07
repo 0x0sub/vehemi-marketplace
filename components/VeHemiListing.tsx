@@ -124,33 +124,20 @@ export default function VeHemiListing({
     }
   }, [selectedTokenId, address, approvalChecked]);
 
-  // Check if marketplace is approved for the selected token (only when needed)
-  const { data: isApprovedForAll, refetch: refetchApproval } = useReadContract({
-    address: veHemiAddress,
-    abi: ERC721_ABI,
-    functionName: 'isApprovedForAll',
-    args: address && selectedTokenId ? [address, marketplaceAddress] : undefined,
-    query: {
-      enabled: !!address && !!selectedTokenId && !!marketplaceAddress && approvalChecked && !isApproving && !isListing,
-      refetchInterval: false, // Disable automatic refetching
-      staleTime: 60000, // Cache for 60 seconds
-    },
-  });
-
-  // Check if specific token is approved (only when needed)
-  const { data: approvedAddress } = useReadContract({
+  // Check if specific token is approved for the marketplace
+  const { data: approvedAddress, refetch: refetchApproval } = useReadContract({
     address: veHemiAddress,
     abi: ERC721_ABI,
     functionName: 'getApproved',
     args: selectedTokenId ? [BigInt(selectedTokenId)] : undefined,
     query: {
-      enabled: !!selectedTokenId && approvalChecked && !isApprovedForAll && !isApproving && !isListing,
+      enabled: !!selectedTokenId && !!marketplaceAddress && approvalChecked && !isApproving && !isListing,
       refetchInterval: false, // Disable automatic refetching
       staleTime: 60000, // Cache for 60 seconds
     },
   });
 
-  const isTokenApproved = isApprovedForAll || approvedAddress === marketplaceAddress;
+  const isTokenApproved = approvedAddress === marketplaceAddress;
 
   // Contract write functions
   const { writeContract: writeContractApproval, data: approvalHash } = useWriteContract();
@@ -177,7 +164,7 @@ export default function VeHemiListing({
       }, 1000);
       toast({
         title: "Approval Successful",
-        description: "The marketplace can now manage your veHEMI token. You can now create your listing.",
+        description: "The marketplace can now transfer this veHEMI token. You can now create your listing.",
         variant: "success",
       });
     }
@@ -219,15 +206,15 @@ export default function VeHemiListing({
       await writeContractApproval({
         address: veHemiAddress,
         abi: ERC721_ABI,
-        functionName: 'setApprovalForAll',
-        args: [marketplaceAddress, true],
+        functionName: 'approve',
+        args: [marketplaceAddress, BigInt(selectedTokenId)],
       });
     } catch (error) {
       console.error('Approval failed:', error);
       setIsApproving(false);
       toast({
         title: "Approval Failed",
-        description: `Failed to approve the marketplace: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        description: `Failed to approve the marketplace for this token: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
     }
