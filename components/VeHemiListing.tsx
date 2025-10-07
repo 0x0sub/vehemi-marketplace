@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ChevronDown, Wallet, Coins, Calendar, Timer, Hash, AlertCircle, X, Loader2 } from "lucide-react";
+import { ChevronDown, Wallet, Coins, Calendar, Timer, Hash, AlertCircle, X, Loader2, Sparkles } from "lucide-react";
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useChainId } from "wagmi";
 import { parseEther, formatEther } from "viem";
 import { CONTRACTS, MARKETPLACE_ABI, ERC721_ABI } from "../lib/contracts";
@@ -52,6 +52,7 @@ export default function VeHemiListing({
   const [isApproving, setIsApproving] = useState(false);
   const [isListing, setIsListing] = useState(false);
   const [approvalChecked, setApprovalChecked] = useState(false);
+  const [spotPriceUsd, setSpotPriceUsd] = useState<number | null>(null);
 
   const { address, isConnected: walletConnected } = useAccount();
   const { toast } = useToast();
@@ -70,10 +71,47 @@ export default function VeHemiListing({
     return walletTokens.find(t => t.id === selectedTokenId);
   }, [selectedTokenId, walletTokens]);
 
+  // Calculate price per HEMI in USD
+  const pricePerHemiUsd = useMemo(() => {
+    if (!selectedToken || price <= 0 || !selectedToken.hemiLocked) return null;
+    
+    // Convert listing price to USD
+    let priceInUsd = price;
+    if (currency === "HEMI" && spotPriceUsd) {
+      priceInUsd = price * spotPriceUsd;
+    }
+    
+    return priceInUsd / selectedToken.hemiLocked;
+  }, [selectedToken, price, currency, spotPriceUsd]);
+
+  // Calculate percentage difference from spot
+  const spotDifference = useMemo(() => {
+    if (!pricePerHemiUsd || !spotPriceUsd) return null;
+    return ((pricePerHemiUsd - spotPriceUsd) / spotPriceUsd) * 100;
+  }, [pricePerHemiUsd, spotPriceUsd]);
+
   // Auto-select token when tokenId prop changes
   useEffect(() => {
     if (tokenId) setSelectedTokenId(tokenId);
   }, [tokenId]);
+
+  // Fetch HEMI spot price
+  useEffect(() => {
+    const fetchSpotPrice = async () => {
+      try {
+        const response = await fetch('/api/hemi-price');
+        const data = await response.json();
+        setSpotPriceUsd(data.priceUsd);
+      } catch (error) {
+        console.error('Failed to fetch HEMI spot price:', error);
+      }
+    };
+    
+    fetchSpotPrice();
+    // Refresh spot price every 60 seconds
+    const interval = setInterval(fetchSpotPrice, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Debounced approval checking to reduce RPC calls
   useEffect(() => {
@@ -277,11 +315,6 @@ export default function VeHemiListing({
   }, [currency, usdcAddress, toast]);
 
   return <section aria-label="Create veHEMI listing" className="max-w-2xl mx-auto p-6 sm:p-8 bg-[color:var(--card)] border border-slate-800/70 rounded-3xl shadow-lg">
-      <header className="mb-6">
-        <h1 className="text-2xl font-semibold text-white"><span>Create veHEMI Listing</span></h1>
-        <p className="text-slate-400 mt-1"><span>List your veHEMI position.</span></p>
-      </header>
-
       {/* Way 1: No tokenId -> select from wallet */}
       {!selectedTokenId && <div className="space-y-3 mb-8">
           <label htmlFor="token-select" className="text-sm font-medium text-white flex items-center gap-2">
@@ -377,7 +410,7 @@ export default function VeHemiListing({
           </label>
           <div className="grid grid-cols-[1fr_auto] gap-2 items-stretch">
             <div className="relative">
-              <input type="number" min={0} step={0.0001} value={price === 0 ? "" : String(price)} onChange={e => setPrice(parseFloat(e.target.value) || 0)} onBlur={() => setTouchedPrice(true)} className="w-full bg-slate-900/60 border border-slate-800 rounded-2xl px-4 py-3 text-slate-200" placeholder="Enter price" aria-invalid={!!priceError} />
+              <input type="number" min={0} step={0.0001} value={price === 0 ? "" : String(price)} onChange={e => setPrice(parseFloat(e.target.value) || 0)} onBlur={() => setTouchedPrice(true)} className="w-full bg-slate-900/60 border border-slate-800 rounded-2xl px-4 py-3 text-slate-200" placeholder="Enter total sale price" aria-invalid={!!priceError} />
               {priceError && <p className="mt-2 text-sm text-red-400 flex items-center gap-2">
                   <AlertCircle className="w-4 h-4" />
                   <span>{priceError}</span>
@@ -404,19 +437,46 @@ export default function VeHemiListing({
               <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-200" />
             </div>
           </div>
+          <p className="text-xs flex items-center gap-1.5" style={{ color: '#9BA0B3' }}>
+            <AlertCircle className="w-3.5 h-3.5" />
+            <span>Set the total sale price for all locked HEMI in this position.</span>
+          </p>
+          {pricePerHemiUsd && spotDifference !== null && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-slate-700/60 bg-slate-800/40" style={{ color: '#9BA0B3' }}>
+                <span>≈ Price / HEMI: {pricePerHemiUsd.toFixed(4)} USD</span>
+              </span>
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${spotDifference < 0 ? 'bg-green-500/10 text-green-500 border border-green-500/30' : 'bg-red-500/10 text-red-500 border border-red-500/30'}`}>
+                <span>{spotDifference < 0 ? '↘' : '↗'} {Math.abs(spotDifference).toFixed(1)}% {spotDifference < 0 ? 'below' : 'above'} spot</span>
+              </span>
+            </div>
+          )}
         </section>
 
-        <section className="space-y-2 bg-slate-900/40 border border-slate-800 rounded-2xl p-4" aria-label="Summary">
-          <h2 className="text-white font-semibold"><span>Summary</span></h2>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <p className="text-slate-400"><span>Duration</span></p>
-            <p className="text-white text-right font-medium"><span>{Math.round(durationHours / 24)} days</span></p>
-            <p className="text-slate-400"><span>Price</span></p>
-            <p className="text-white text-right font-medium"><span>{price > 0 ? price.toLocaleString() : 0} {currency}</span></p>
-            <p className="text-slate-400"><span>Fee (5%)</span></p>
-            <p className="text-white text-right font-medium"><span>{price > 0 ? fee.toLocaleString() : 0} {currency}</span></p>
-            <p className="text-slate-400"><span>You receive</span></p>
-            <p className="text-white text-right font-semibold"><span>{proceeds > 0 ? proceeds.toLocaleString() : 0} {currency}</span></p>
+        <section className="space-y-3 bg-[#191920] border border-slate-800 rounded-2xl p-4" aria-label="Summary">
+          <h2 className="text-white font-semibold flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-slate-400" />
+            <span>Summary</span>
+          </h2>
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <p className="text-slate-400"><span>Duration</span></p>
+              <p className="text-white text-right font-medium"><span>{Math.round(durationHours / 24)} days</span></p>
+              <p className="text-slate-400"><span>Total Price</span></p>
+              <p className="text-white text-right font-medium"><span>{price > 0 ? price.toLocaleString() : 0} {currency}</span></p>
+              <p className="text-slate-400"><span>Fee (5%)</span></p>
+              <p className="text-white text-right font-medium"><span>{price > 0 ? fee.toLocaleString() : 0} {currency}</span></p>
+            </div>
+            <div className="border-t border-slate-700/50 pt-3 grid grid-cols-2 gap-2 text-sm">
+              <p className="text-slate-400"><span>You Receive</span></p>
+              <p className="text-right font-semibold" style={{ color: 'var(--hemi-cyan)' }}><span>{proceeds > 0 ? proceeds.toLocaleString() : 0} {currency}</span></p>
+              {pricePerHemiUsd && (
+                <>
+                  <p className="text-slate-400"><span>Price / HEMI</span></p>
+                  <p className="text-white text-right font-medium"><span>{pricePerHemiUsd.toFixed(4)} USD</span></p>
+                </>
+              )}
+            </div>
           </div>
         </section>
 

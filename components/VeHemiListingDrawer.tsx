@@ -185,7 +185,7 @@ export function VeHemiListingDrawer({
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-slate-800/70">
               <h2 className="text-xl font-semibold text-white">
-                List veHEMI Position
+                Create veHEMI Listing
               </h2>
               <button
                 onClick={handleClose}
