@@ -132,6 +132,11 @@ export const MarketplacePage = () => {
     lastUpdated: null,
     sparkline: []
   });
+  const [statsData, setStatsData] = useState<{
+    salesCount: number;
+    totalHemiLocked: number;
+    totalUsdValue: number;
+  } | null>(null);
 
   // Fetch HEMI price data
   const fetchHemiPriceData = async () => {
@@ -212,10 +217,26 @@ export const MarketplacePage = () => {
     }
   };
 
+  // Fetch 30d stats data
+  const fetchStatsData = async () => {
+    try {
+      const response = await fetch('/api/stats/30d');
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.data) {
+          setStatsData(result.data);
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching stats data:', err);
+    }
+  };
+
   // Fetch listings and price data on component mount
   useEffect(() => {
     fetchListings();
     fetchHemiPriceData();
+    fetchStatsData();
   }, []);
 
   // Apply/Reset from sidebar → client-side filtering
@@ -419,6 +440,8 @@ export const MarketplacePage = () => {
                   hemiPrice={filteredAndSortedTokens.length > 0 ? filteredAndSortedTokens[0].hemiPrice : undefined}
                   connectedUser={address}
                   hemiPriceData={hemiPriceData}
+                  stats={statsData || undefined}
+                  statsPeriod="30d"
                 />
                 {(() => {
                   const totalFiltered = allTokens.filter(token => {

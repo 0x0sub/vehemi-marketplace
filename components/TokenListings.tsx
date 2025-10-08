@@ -77,6 +77,12 @@ interface TokenListingsProps {
     lastUpdated: string | null;
     sparkline: number[];
   };
+  stats?: {
+    salesCount: number;
+    totalHemiLocked: number;
+    totalUsdValue: number;
+  };
+  statsPeriod?: string;
 }
 const formatDuration = (days: number): string => {
   if (days < 30) return `${days} days`;
@@ -127,7 +133,9 @@ export const TokenListings = ({
   totalCount,
   hemiPrice,
   connectedUser,
-  hemiPriceData
+  hemiPriceData,
+  stats,
+  statsPeriod
 }: TokenListingsProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTokenId, setSelectedTokenId] = useState<string | null>(null);
@@ -195,6 +203,8 @@ export const TokenListings = ({
         change24h={hemiPriceData?.change24h}
         lastUpdatedIso={hemiPriceData?.lastUpdated || undefined}
         sparkline={hemiPriceData?.sparkline}
+        stats={stats}
+        statsPeriod={statsPeriod}
       />
 
       {tokens.length === 0 ? <div className="text-center py-16">
