@@ -286,10 +286,10 @@ export const MarketplacePage = () => {
 
   // @return
   return <div>
-      <main className="px-4 sm:px-6 lg:px-8 xl:px-16 2xl:px-24 py-8 mx-4 sm:mx-12 lg:mx-16 xl:mx-32 2xl:mx-48">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Filter Toggle Button - Mobile Only */}
-          <div className="lg:hidden mb-4">
+      <main className="px-4 sm:px-6 lg:px-8 xl:px-12 py-8 mx-auto max-w-screen-2xl">
+        <div className="flex flex-col xl:flex-row gap-8">
+          {/* Filter Toggle Button - Visible on mobile/tablet/laptop, hidden on xl+ (1440px+) */}
+          <div className="xl:hidden mb-4">
             <button
               onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
               className="flex items-center gap-2 px-4 py-2 bg-[color:var(--card)] border border-slate-800/80 rounded-xl text-slate-300 hover:bg-slate-800/40 transition-colors"
@@ -300,9 +300,40 @@ export const MarketplacePage = () => {
             </button>
           </div>
 
-          {/* Filter Sidebar - Always visible on desktop, conditional on mobile */}
-          <aside className={`w-full lg:w-80 flex-shrink-0 ${!mobileFiltersOpen ? 'hidden lg:block' : ''}`}>
-            <FilterSidebar filters={filters} onFiltersChange={handleApplyFilters} />
+          {/* Backdrop overlay for mobile/tablet/laptop when filters are open */}
+          {mobileFiltersOpen && (
+            <div 
+              className="xl:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+              onClick={() => setMobileFiltersOpen(false)}
+            />
+          )}
+
+          {/* Filter Sidebar */}
+          {/* On mobile/tablet/laptop (< xl): Fixed overlay panel */}
+          {/* On desktop (xl+): Inline sidebar */}
+          <aside className={`
+            ${mobileFiltersOpen ? 'fixed inset-y-0 left-0 z-50 w-80' : 'hidden'}
+            xl:relative xl:block xl:w-80 xl:flex-shrink-0
+            bg-[color:var(--background)] xl:bg-transparent
+            overflow-y-auto
+            transition-transform duration-300 ease-in-out
+          `}>
+            <div className="xl:hidden flex items-center justify-between p-4 border-b border-slate-800/80">
+              <h2 className="text-lg font-semibold text-white">Filters</h2>
+              <button
+                onClick={() => setMobileFiltersOpen(false)}
+                className="p-2 hover:bg-slate-800/40 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-400" />
+              </button>
+            </div>
+            <div className="p-4 xl:p-0">
+              <FilterSidebar 
+                filters={filters} 
+                onFiltersChange={handleApplyFilters}
+                onClose={() => setMobileFiltersOpen(false)}
+              />
+            </div>
           </aside>
           
           <section className="flex-1 min-w-0">

@@ -207,16 +207,115 @@ export const TokenListings = ({
           <p className="text-slate-400 max-w-sm mx-auto">
             <span>Try adjusting your filters to find more veHemi tokens that match your criteria.</span>
           </p>
-        </div> :         <motion.div layout className="bg-[color:var(--card)] rounded-2xl border border-slate-800/80 shadow-sm overflow-hidden">
+        </div> : <>
+        {/* Mobile Card Layout (< 768px) */}
+        <div className="md:hidden space-y-4">
+          {tokens.map(t => {
+            const unit = t.hemiAmount > 0 && t.usdValue ? t.usdValue / t.hemiAmount : 0;
+            const hemiDiff = formatHEMIDifference(unit, t.hemiPrice);
+            return (
+              <motion.div 
+                key={t.id}
+                layout
+                className="bg-[color:var(--card)] rounded-2xl border border-slate-800/80 shadow-sm p-4 space-y-4"
+              >
+                {/* Header: Token ID and Icon */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center p-1">
+                      <Image
+                        src="/vehemi-locked-logo.png"
+                        alt="veHEMI logo"
+                        width={28}
+                        height={28}
+                        className="rounded-full"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-base font-semibold text-white">#{t.tokenId}</p>
+                      <p className="text-xs text-slate-400">ID: {t.id}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Main Info Grid */}
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Amount */}
+                  <div>
+                    <p className="text-xs text-slate-400 mb-1">Amount</p>
+                    <p className="text-lg font-semibold text-white">{formatAmount(t.hemiAmount)} HEMI</p>
+                  </div>
+
+                  {/* Unlocks In */}
+                  <div>
+                    <p className="text-xs text-slate-400 mb-1">Unlocks In</p>
+                    <p className="text-sm font-medium text-slate-300">{formatDuration(t.unlocksIn)}</p>
+                  </div>
+
+                  {/* Price per HEMI */}
+                  <div>
+                    <p className="text-xs text-slate-400 mb-1">Price / HEMI</p>
+                    <div className="flex items-center gap-1">
+                      <span className="text-base font-semibold text-white">{formatUnitPrice(unit)}</span>
+                      {hemiDiff.text && (
+                        <span className={`text-xs ${hemiDiff.color}`}>({hemiDiff.text})</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Total Price */}
+                  <div>
+                    <p className="text-xs text-slate-400 mb-1">Total Price</p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base font-semibold text-white">{formatAmount(t.price)}</span>
+                      <Image
+                        src={getTokenLogo(t.paymentToken.symbol)}
+                        alt={`${t.paymentToken.symbol} logo`}
+                        width={16}
+                        height={16}
+                        className="rounded-full"
+                      />
+                    </div>
+                    <p className="text-xs text-slate-400 mt-0.5">${formatUSDValue(t.usdValue)}</p>
+                  </div>
+                </div>
+
+                {/* Action Button */}
+                <div className="pt-2 border-t border-slate-800/50">
+                  {isUserSeller(t) ? (
+                    <button 
+                      disabled={isCancelPending || isCancelConfirming}
+                      onClick={() => handleCancelListing(t.tokenId)}
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-red-500 hover:text-red-400 hover:bg-red-500/10 border border-red-500/20 disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {isCancelPending || isCancelConfirming ? 'Cancelling...' : 'Cancel Listing'}
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => handleBuyClick(t.id)}
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold bg-gradient-to-r from-amber-400 to-orange-500 text-black shadow-[0_1px_0_0_rgba(255,255,255,0.25)_inset,0_8px_24px_-8px_rgba(255,153,0,0.55)] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/40"
+                    >
+                      <span>Buy Now</span>
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Tablet/Laptop/Desktop Table Layout (≥ 768px) */}
+        <motion.div layout className="hidden md:block bg-[color:var(--card)] rounded-2xl border border-slate-800/80 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full text-left">
               <caption className="sr-only">veHemi token listings</caption>
               <thead className="bg-slate-900/50">
                 <tr>
-                  <th scope="col" className="px-6 py-4 text-xs font-semibold tracking-wide text-slate-400 uppercase cursor-pointer" onClick={() => handleHeaderSort('tokenId')} aria-sort={sortOption.field === 'tokenId' ? sortOption.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
+                  {/* Listing ID - Hidden on tablet/laptop, show on desktop (xl+) */}
+                  <th scope="col" className="hidden xl:table-cell px-6 py-4 text-xs font-semibold tracking-wide text-slate-400 uppercase cursor-pointer" onClick={() => handleHeaderSort('tokenId')} aria-sort={sortOption.field === 'tokenId' ? sortOption.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
                     <span>Listing ID</span>
                   </th>
-                  <th scope="col" className="px-6 py-4 text-xs font-semibold tracking-wide text-slate-400 uppercase cursor-pointer" onClick={() => handleHeaderSort('unitPrice')} aria-sort={sortOption.field === 'unitPrice' ? sortOption.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
+                  <th scope="col" className="px-4 md:px-6 py-4 text-xs font-semibold tracking-wide text-slate-400 uppercase cursor-pointer" onClick={() => handleHeaderSort('unitPrice')} aria-sort={sortOption.field === 'unitPrice' ? sortOption.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
                     <Tooltip content={
                       <div className="normal-case">
                         <div className="font-bold text-[#F9FAFB] mb-1">Price per HEMI Token</div>
@@ -231,7 +330,7 @@ export const TokenListings = ({
                       <span>Price / 1 HEMI</span>
                     </Tooltip>
                   </th>
-                  <th scope="col" className="px-6 py-4 text-xs font-semibold tracking-wide text-slate-400 uppercase cursor-pointer" onClick={() => handleHeaderSort('hemiAmount')} aria-sort={sortOption.field === 'hemiAmount' ? sortOption.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
+                  <th scope="col" className="px-4 md:px-6 py-4 text-xs font-semibold tracking-wide text-slate-400 uppercase cursor-pointer" onClick={() => handleHeaderSort('hemiAmount')} aria-sort={sortOption.field === 'hemiAmount' ? sortOption.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
                     <Tooltip content={
                       <div className="normal-case">
                         <div className="font-bold text-[#F9FAFB] mb-1">Total HEMI Amount</div>
@@ -246,7 +345,8 @@ export const TokenListings = ({
                       <span>Amount</span>
                     </Tooltip>
                   </th>
-                  <th scope="col" className="px-6 py-4 text-xs font-semibold tracking-wide text-slate-400 uppercase cursor-pointer" onClick={() => handleHeaderSort('unlocksIn')} aria-sort={sortOption.field === 'unlocksIn' ? sortOption.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
+                  {/* Unlocks In - Hidden on tablet, show on laptop+ (lg+) */}
+                  <th scope="col" className="hidden lg:table-cell px-4 md:px-6 py-4 text-xs font-semibold tracking-wide text-slate-400 uppercase cursor-pointer" onClick={() => handleHeaderSort('unlocksIn')} aria-sort={sortOption.field === 'unlocksIn' ? sortOption.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
                     <Tooltip content={
                       <div className="normal-case">
                         <div className="font-bold text-[#F9FAFB] mb-1">Unlock Time Remaining</div>
@@ -261,7 +361,7 @@ export const TokenListings = ({
                       <span>Unlocks In</span>
                     </Tooltip>
                   </th>
-                  <th scope="col" className="px-6 py-4 text-xs font-semibold tracking-wide text-slate-400 uppercase cursor-pointer" onClick={() => handleHeaderSort('price')} aria-sort={sortOption.field === 'price' ? sortOption.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
+                  <th scope="col" className="px-4 md:px-6 py-4 text-xs font-semibold tracking-wide text-slate-400 uppercase cursor-pointer" onClick={() => handleHeaderSort('price')} aria-sort={sortOption.field === 'price' ? sortOption.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
                     <Tooltip content={
                       <div className="normal-case">
                         <div className="font-bold text-[#F9FAFB] mb-1">Total Purchase Price</div>
@@ -276,7 +376,7 @@ export const TokenListings = ({
                       <span>Total Price</span>
                     </Tooltip>
                   </th>
-                  <th scope="col" className="px-6 py-4 text-xs font-semibold tracking-wide text-slate-400 uppercase select-none">
+                  <th scope="col" className="px-4 md:px-6 py-4 text-xs font-semibold tracking-wide text-slate-400 uppercase select-none">
                     <span>Action</span>
                   </th>
                 </tr>
@@ -286,7 +386,8 @@ export const TokenListings = ({
               const unit = t.hemiAmount > 0 && t.usdValue ? t.usdValue / t.hemiAmount : 0;
               const hemiDiff = formatHEMIDifference(unit, t.hemiPrice);
               return <tr key={t.id} className="hover:bg-slate-900/40 transition-colors">
-                      <th scope="row" className="px-6 py-4 whitespace-nowrap">
+                      {/* Listing ID - Hidden on tablet/laptop, show on desktop (xl+) */}
+                      <th scope="row" className="hidden xl:table-cell px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
                           <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center p-1">
                             <Image
@@ -307,24 +408,26 @@ export const TokenListings = ({
                           </div>
                         </div>
                       </th>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg font-semibold text-white">
+                      {/* Price / 1 HEMI - Multi-row on laptop (lg), single row on desktop (xl+) */}
+                      <td className="px-4 md:px-6 py-4">
+                        <div className="lg:space-y-1 xl:space-y-0 xl:flex xl:items-center xl:gap-2">
+                          <span className="text-base lg:text-lg font-semibold text-white block xl:inline">
                             {formatUnitPrice(unit)}
                           </span>
                           {hemiDiff.text && (
-                            <span className={`text-xs ${hemiDiff.color}`}>
-                              ({hemiDiff.text}) 
+                            <span className={`text-xs ${hemiDiff.color} block xl:inline`}>
+                              ({hemiDiff.text})
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <p className="text-lg font-semibold text-white">
+                      <td className="px-4 md:px-6 py-4">
+                        <p className="text-base lg:text-lg font-semibold text-white">
                           <span>{formatAmount(t.hemiAmount)}</span>
                         </p>
                       </td>
-                      <td className="px-6 py-4">
+                      {/* Unlocks In - Hidden on tablet, show on laptop+ (lg+) */}
+                      <td className="hidden lg:table-cell px-4 md:px-6 py-4">
                         <Tooltip 
                           content={
                             <div className="text-xs">
@@ -348,14 +451,13 @@ export const TokenListings = ({
                           </p>
                         </Tooltip>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
+                      {/* Total Price - Multi-row on laptop (lg), single row on desktop (xl+) */}
+                      <td className="px-4 md:px-6 py-4">
+                        <div className="lg:space-y-1 xl:space-y-0">
                           <div className="flex items-center gap-2">
-                            
-                            <span className="text-lg font-semibold text-white">
-                              {formatAmount(t.price)} 
+                            <span className="text-base lg:text-lg font-semibold text-white">
+                              {formatAmount(t.price)}
                             </span>
-
                             <Image
                               src={getTokenLogo(t.paymentToken.symbol)}
                               alt={`${t.paymentToken.symbol} logo`}
@@ -363,19 +465,22 @@ export const TokenListings = ({
                               height={20}
                               className="rounded-full"
                             />
+                            <span className="text-sm text-slate-400 xl:inline hidden">
+                              (${formatUSDValue(t.usdValue)})
+                            </span>
                           </div>
-                          <span className="text-sm text-slate-400">
-                            (${formatUSDValue(t.usdValue)})
+                          <span className="text-xs lg:text-sm text-slate-400 xl:hidden block">
+                            ${formatUSDValue(t.usdValue)}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 md:px-6 py-4">
                         {isUserSeller(t) ? (
                           <Tooltip content={`Cancel your listing veHEMI #${t.tokenId}`}>
                             <button 
                               disabled={isCancelPending || isCancelConfirming}
                               onClick={() => handleCancelListing(t.tokenId)}
-                              className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-red-500 hover:text-red-400 hover:underline disabled:opacity-60 disabled:cursor-not-allowed"
+                              className="inline-flex items-center justify-center gap-2 rounded-lg px-3 lg:px-4 py-2 text-xs lg:text-sm font-medium text-red-500 hover:text-red-400 hover:underline disabled:opacity-60 disabled:cursor-not-allowed"
                             >
                               {isCancelPending || isCancelConfirming ? 'Cancelling...' : 'Cancel'}
                             </button>
@@ -383,7 +488,7 @@ export const TokenListings = ({
                         ) : (
                           <button 
                             onClick={() => handleBuyClick(t.id)}
-                            className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold bg-gradient-to-r from-amber-400 to-orange-500 text-black shadow-[0_1px_0_0_rgba(255,255,255,0.25)_inset,0_8px_24px_-8px_rgba(255,153,0,0.55)] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/40"
+                            className="inline-flex items-center gap-2 rounded-lg px-3 lg:px-4 py-2 text-xs lg:text-sm font-semibold bg-gradient-to-r from-amber-400 to-orange-500 text-black shadow-[0_1px_0_0_rgba(255,255,255,0.25)_inset,0_8px_24px_-8px_rgba(255,153,0,0.55)] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/40"
                           >
                             <span>Buy</span>
                           </button>
@@ -394,7 +499,8 @@ export const TokenListings = ({
               </tbody>
             </table>
           </div>
-        </motion.div>}
+        </motion.div>
+      </>}
       
       {/* Purchase Modal */}
       <TokenPurchaseModal

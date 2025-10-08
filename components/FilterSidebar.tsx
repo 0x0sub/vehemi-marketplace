@@ -9,6 +9,7 @@ interface FilterState {
 interface FilterSidebarProps {
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
+  onClose?: () => void; // Optional callback to close filter panel
 }
 const formatDuration = (days: number): string => {
   if (days < 30) return `${days}d`;
@@ -24,7 +25,8 @@ const formatAmount = (amount: number): string => {
 // @component: FilterSidebar
 export const FilterSidebar = ({
   filters,
-  onFiltersChange
+  onFiltersChange,
+  onClose
 }: FilterSidebarProps) => {
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
   useEffect(() => {
@@ -32,6 +34,7 @@ export const FilterSidebar = ({
   }, [filters]);
   const handleApplyFilters = () => {
     onFiltersChange(localFilters);
+    onClose?.(); // Close filter panel after applying
   };
   const handleResetFilters = () => {
     const resetFilters: FilterState = {
@@ -42,6 +45,7 @@ export const FilterSidebar = ({
     };
     setLocalFilters(resetFilters);
     onFiltersChange(resetFilters);
+    onClose?.(); // Close filter panel after resetting
   };
   const updateHemiRange = (index: 0 | 1, value: number) => {
     const clamped = Math.max(0, Math.min(100_000, value));

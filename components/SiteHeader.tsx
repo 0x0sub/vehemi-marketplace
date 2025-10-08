@@ -13,8 +13,8 @@ export function SiteHeader() {
 
   return (
     <header className="w-full bg-black/40 backdrop-blur-sm border-b border-slate-800 sticky top-0 z-40">
-      <div className="px-4 sm:px-6 lg:px-8 xl:px-16 2xl:px-24 py-4 sm:py-6 sm:mx-12 lg:mx-16 xl:mx-32 2xl:mx-48">
-        <div className="flex items-center gap-4">
+      <div className="px-4 sm:px-6 lg:px-8 xl:px-12 py-4 sm:py-5 mx-auto max-w-screen-2xl">
+        <div className="flex items-center gap-3 sm:gap-4">
           <button type="button" className="inline-flex md:hidden items-center justify-center rounded-md border border-slate-700/60 bg-black/30 px-3 py-2 text-slate-200 hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--hemi-orange)]" aria-label="Open menu" aria-controls="mobile-menu" aria-expanded={mobileMenuOpen} onClick={() => setMobileMenuOpen(v => !v)}>
             <span className="sr-only">Menu</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
@@ -22,29 +22,29 @@ export function SiteHeader() {
             </svg>
           </button>
 
-          <div className="flex items-start gap-3 sm:gap-4 min-w-0 flex-1">
+          <div className="flex items-start gap-3 sm:gap-4 min-w-0 md:flex-1">
             <Link href="/" className="flex-shrink-0 self-start sm:self-center cursor-pointer">
               <img 
                 src="/vehemi-logo.svg" 
                 alt="Vehemi logo" 
-                className="h-9 w-9 sm:h-16 sm:w-16"
+                className="h-9 w-9 md:h-12 md:w-12 lg:h-14 lg:w-14 xl:h-16 xl:w-16"
                 aria-label="Vehemi logo"
                 role="img"
               />
             </Link>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-shrink md:hidden xl:block">
               <Link href="/" className="cursor-pointer">
-                <h1 className="text-2xl sm:text-4xl font-semibold tracking-tight">
-                  <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent"><span className="text-[color:var(--hemi-orange)] font-semibold">veHEMI</span> Marketplace</span>
+                <h1 className="text-2xl xl:text-4xl font-semibold tracking-tight text-white">
+                  <span className="text-[color:var(--hemi-orange)] font-semibold">veHEMI</span> Marketplace
                 </h1>
               </Link>
-              <p className="mt-1 sm:mt-2 text-slate-400 text-sm sm:text-base hidden sm:block">
+              <p className="mt-1 sm:mt-2 text-slate-400 text-xs xl:text-base hidden xl:block">
                 <span>Liquid Trading Hub for Locked veHEMI</span>
               </p>
             </div>
           </div>
 
-          <nav aria-label="primary" className="hidden md:flex items-center gap-6 pt-1">
+          <nav aria-label="primary" className="hidden md:flex items-center gap-4 lg:gap-5 xl:gap-6 flex-shrink-0">
             <Link 
               href="/" 
               className={`text-sm font-medium transition-colors ${
@@ -87,13 +87,13 @@ export function SiteHeader() {
             </Link>
             <button 
               onClick={() => openListingDrawer()}
-              className="text-sm font-medium text-slate-400 hover:text-white transition-colors"
+              className="hidden lg:inline-block text-sm font-medium text-slate-400 hover:text-white transition-colors"
             >
               <span>List veHEMI</span>
             </button>
           </nav>
 
-          <nav aria-label="wallet actions" className="ml-auto hidden md:flex items-center gap-2">
+          <nav aria-label="wallet actions" className="hidden md:flex items-center gap-2">
             <WalletConnectionWrapper />
           </nav>
         </div>
