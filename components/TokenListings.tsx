@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { TokenPurchaseModal } from './TokenPurchaseModal';
 import { Tooltip } from './Tooltip';
@@ -227,7 +228,14 @@ export const TokenListings = ({
               <motion.div 
                 key={t.id}
                 layout
-                className="bg-[color:var(--card)] rounded-2xl border border-slate-800/80 shadow-sm p-4 space-y-4"
+                className="bg-[color:var(--card)] rounded-2xl border border-slate-800/80 shadow-sm p-4 space-y-4 cursor-pointer hover:border-slate-700/90 transition-all"
+                onClick={(e) => {
+                  // Don't navigate if clicking on a button
+                  if ((e.target as HTMLElement).tagName === 'BUTTON' || (e.target as HTMLElement).closest('button')) {
+                    return;
+                  }
+                  window.location.href = `/d/${t.tokenId}`;
+                }}
               >
                 {/* Header: Token ID and Icon */}
                 <div className="flex items-center justify-between">
@@ -395,7 +403,17 @@ export const TokenListings = ({
                 {tokens.map(t => {
               const unit = t.hemiAmount > 0 && t.usdValue ? t.usdValue / t.hemiAmount : 0;
               const hemiDiff = formatHEMIDifference(unit, t.hemiPrice);
-              return <tr key={t.id} className="hover:bg-slate-900/40 transition-colors">
+              return <tr 
+                key={t.id} 
+                className="hover:bg-slate-900/40 transition-colors cursor-pointer"
+                onClick={(e) => {
+                  // Don't navigate if clicking on a button
+                  if ((e.target as HTMLElement).tagName === 'BUTTON' || (e.target as HTMLElement).closest('button')) {
+                    return;
+                  }
+                  window.location.href = `/d/${t.tokenId}`;
+                }}
+              >
                       {/* Listing ID - Hidden on tablet/laptop, show on desktop (xl+) */}
                       <th scope="row" className="hidden xl:table-cell px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">

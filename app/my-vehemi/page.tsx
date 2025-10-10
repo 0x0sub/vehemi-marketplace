@@ -308,7 +308,16 @@ function TableView({ rows, sortBy, setSortBy, onList, onCancel, isCancellingId, 
         <tbody>
           {rows.map((r) => (
             <React.Fragment key={r.id}>
-              <tr className="border-t border-[#1E2937]">
+              <tr 
+                className="border-t border-[#1E2937] cursor-pointer hover:bg-slate-800/30 transition-colors"
+                onClick={(e) => {
+                  // Don't navigate if clicking on a button
+                  if ((e.target as HTMLElement).tagName === 'BUTTON' || (e.target as HTMLElement).closest('button')) {
+                    return;
+                  }
+                  window.location.href = `/d/${r.tokenId}`;
+                }}
+              >
                 <td className="px-3 py-2 text-sm">#{r.id}</td>
                 <td className="px-3 py-2 tabular-nums text-lg font-semibold">{r.amount.toLocaleString()}</td>
                 <td className="px-3 py-2 text-sm">

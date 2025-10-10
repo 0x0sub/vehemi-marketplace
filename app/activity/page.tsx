@@ -342,6 +342,14 @@ function FeedItem({ evt, hemiUsd }: { evt: FeedEvent; hemiUsd?: number | null })
           <div className="flex items-center gap-2">
             <div className="truncate text-sm font-medium">{formatTitle()}</div>
             <span className="text-xs text-[#93A4B7]">{timeAgo(evt.timestamp)}</span>
+            <a 
+              href={`/d/${evt.positionId}`}
+              className="text-[#93A4B7] hover:text-[#2599EE] transition-colors ml-1"
+              title="View position details"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ExternalIcon className="h-3.5 w-3.5" />
+            </a>
           </div>
           {/* Line 2 meta */}
           <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-[#93A4B7]">
