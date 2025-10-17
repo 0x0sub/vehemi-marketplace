@@ -100,7 +100,7 @@ export async function getActiveListings(options: {
   let paramIndex = 1
 
   // Build WHERE clause
-  const whereConditions = ["l.status = 'active'", "l.deadline_timestamp > NOW()"]
+  const whereConditions = ["l.status = 'active'", "l.deadline_timestamp > NOW()", "COALESCE(n.blacklist, false) = false"]
   
   if (minPrice) {
     whereConditions.push(`l.price_wei >= $${paramIndex}`)
@@ -296,7 +296,7 @@ export async function getListingByTokenId(tokenId: string) {
     FROM listings l
     LEFT JOIN nft_tokens n ON l.token_id = n.token_id
     LEFT JOIN payment_tokens pt ON l.payment_token_address = pt.token_address
-    WHERE l.token_id = $1 AND l.status = 'active' AND l.deadline_timestamp > NOW()
+    WHERE l.token_id = $1 AND l.status = 'active' AND l.deadline_timestamp > NOW() AND COALESCE(n.blacklist, false) = false
     ORDER BY l.created_at_timestamp DESC
     LIMIT 1
   `

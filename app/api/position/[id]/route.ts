@@ -21,6 +21,7 @@ export async function GET(
         n.token_id,
         n.owner_address,
         n.provider_address,
+        n.blacklist,
         n.vehemi_balance_wei,
         n.vehemi_balance_formatted,
         n.locked_amount_wei,
@@ -74,6 +75,11 @@ export async function GET(
     }
 
     const row = result.rows[0]
+
+    // Return 404 if position is blacklisted
+    if (row.blacklist === true) {
+      return NextResponse.json({ error: 'Position not found' }, { status: 404 })
+    }
 
     // Return 404 if position is closed
     if (row.status === 'closed') {

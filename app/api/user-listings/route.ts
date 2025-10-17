@@ -26,9 +26,11 @@ export async function POST(request: NextRequest) {
           pt.decimals as payment_token_decimals
         FROM listings l
         LEFT JOIN payment_tokens pt ON l.payment_token_address = pt.token_address
+        LEFT JOIN nft_tokens n ON l.token_id = n.token_id
         WHERE l.seller_address = $1 
           AND l.status = 'active'
           AND l.deadline_timestamp > NOW()
+          AND COALESCE(n.blacklist, false) = false
         ORDER BY l.created_at_timestamp DESC
       `
 
@@ -53,10 +55,12 @@ export async function POST(request: NextRequest) {
         pt.decimals as payment_token_decimals
       FROM listings l
       LEFT JOIN payment_tokens pt ON l.payment_token_address = pt.token_address
+      LEFT JOIN nft_tokens n ON l.token_id = n.token_id
       WHERE l.seller_address = $1 
         AND l.token_id IN (${placeholders})
         AND l.status = 'active'
         AND l.deadline_timestamp > NOW()
+        AND COALESCE(n.blacklist, false) = false
       ORDER BY l.created_at_timestamp DESC
     `
 

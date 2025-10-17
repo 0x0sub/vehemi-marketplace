@@ -37,7 +37,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       //  - status=listed -> n.is_listed = true
       //  - status=unlisted -> n.is_listed = false
       const conditions: string[] = [
-        'LOWER(n.owner_address) = LOWER($1)'
+        'LOWER(n.owner_address) = LOWER($1)',
+        'COALESCE(n.blacklist, false) = false'
       ]
       const values: any[] = [address]
 
