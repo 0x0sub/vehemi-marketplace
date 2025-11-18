@@ -105,7 +105,7 @@ interface ApiListing {
 export const MarketplacePage = () => {
   const { address } = useAccount();
   const [filters, setFilters] = useState<FilterState>({
-    hemiAmountRange: [0, 100000],
+    hemiAmountRange: [0, 250000],
     unlocksInRange: [0, 1500],
     paymentTokens: ['HEMI', 'USDC']
   });

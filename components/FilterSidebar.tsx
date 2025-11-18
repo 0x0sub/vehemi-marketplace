@@ -38,7 +38,7 @@ export const FilterSidebar = ({
   };
   const handleResetFilters = () => {
     const resetFilters: FilterState = {
-      hemiAmountRange: [0, 100000],
+      hemiAmountRange: [0, 250000],
       unlocksInRange: [0, 1500],
       paymentTokens: ['HEMI', 'USDC']
       // Note: unitPriceRange is undefined in initial state, not [0, 1]
@@ -48,8 +48,8 @@ export const FilterSidebar = ({
     onClose?.(); // Close filter panel after resetting
   };
   const updateHemiRange = (index: 0 | 1, value: number) => {
-    const clamped = Math.max(0, Math.min(100_000, value));
-    const currentRange = localFilters.hemiAmountRange ?? [0, 100000];
+    const clamped = Math.max(0, Math.min(250_000, value));
+    const currentRange = localFilters.hemiAmountRange ?? [0, 250000];
     const newRange = [...currentRange] as [number, number];
     newRange[index] = clamped;
     if (index === 0 && clamped > newRange[1]) newRange[1] = clamped;
@@ -120,15 +120,15 @@ export const FilterSidebar = ({
           </h3>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <input type="range" min={0} max={100000} step={10} value={localFilters.hemiAmountRange?.[0] ?? 0} onChange={e => updateHemiRange(0, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
+              <input type="range" min={0} max={250000} step={10} value={localFilters.hemiAmountRange?.[0] ?? 0} onChange={e => updateHemiRange(0, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
               <div className="relative">
-                <input type="number" inputMode="numeric" min={0} max={100000} step={10} value={localFilters.hemiAmountRange?.[0] ?? 0} onChange={e => updateHemiRange(0, Number(e.target.value))} className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-[color:var(--hemi-cyan)]/40 focus:outline-none placeholder:text-slate-500" aria-label="Minimum HEMI amount" />
+                <input type="number" inputMode="numeric" min={0} max={250000} step={10} value={localFilters.hemiAmountRange?.[0] ?? 0} onChange={e => updateHemiRange(0, Number(e.target.value))} className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-[color:var(--hemi-cyan)]/40 focus:outline-none placeholder:text-slate-500" aria-label="Minimum HEMI amount" />
               </div>
             </div>
             <div className="space-y-2">
-              <input type="range" min={0} max={100000} step={10} value={localFilters.hemiAmountRange?.[1] ?? 100000} onChange={e => updateHemiRange(1, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
+              <input type="range" min={0} max={250000} step={10} value={localFilters.hemiAmountRange?.[1] ?? 250000} onChange={e => updateHemiRange(1, parseInt(e.target.value))} className="w-full h-2 rounded-full appearance-none cursor-pointer bg-slate-700/40 slider" />
               <div className="relative">
-                <input type="number" inputMode="numeric" min={0} max={1000000} step={10} value={localFilters.hemiAmountRange?.[1] ?? 100000} onChange={e => updateHemiRange(1, Number(e.target.value))} className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-[color:var(--hemi-cyan)]/40 focus:outline-none placeholder:text-slate-500" aria-label="Maximum HEMI amount" />
+                <input type="number" inputMode="numeric" min={0} max={250000} step={10} value={localFilters.hemiAmountRange?.[1] ?? 250000} onChange={e => updateHemiRange(1, Number(e.target.value))} className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-[color:var(--hemi-cyan)]/40 focus:outline-none placeholder:text-slate-500" aria-label="Maximum HEMI amount" />
               </div>
             </div>
           </div>
